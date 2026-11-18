@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Milo Bousquet - AI Engineer</title>
+<meta name="description" content="Étudiant à Epitech Marseille : IA, machine learning et ingénierie logicielle. Projets et liens GitHub.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400;1,9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1c1c1c;
+    --paper: #f2eee9;
+    --muted: #545454;
+    --text: #2d2d2d;
+    --line: 3px;
+    --r: 18px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "DM Sans", system-ui, sans-serif; color: var(--text);
+    background: var(--ink); min-height: 100vh; overflow-x: hidden;
+  }
+  a { color: inherit; }
+  .blob {
+    position: fixed; z-index: 0; pointer-events: none;
+    width: 70vmax; height: 70vmax; left: -28vmax; bottom: -30vmax;
+    background: url(assets/grain.png) center/cover; opacity: .7;
+  }
+
+  /* ---------- frame ---------- */
+  .sheet {
+    position: relative; z-index: 1;
+    max-width: 1180px; margin: 64px auto 24px; background: var(--paper);
+    border-radius: 36px; padding: 56px clamp(16px, 5vw, 64px) 48px;
+  }
+  .contact {
+    position: absolute; top: -46px; left: 50%; transform: translateX(-50%);
+    height: 52px; padding: 0 64px; background: var(--ink); color: var(--paper);
+    display: flex; gap: 32px; align-items: center; font-size: 15px; white-space: nowrap;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 44px) 100%, 44px 100%);
+  }
+  .contact a, .contact span { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .contact a:hover { text-decoration: underline; }
+  .contact svg { width: 16px; height: 16px; fill: currentColor; }
+
+  /* ---------- hero ---------- */
+  .hero { display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: center; }
+  h1 {
+    font-family: Impact, "Anton", sans-serif; font-weight: 400; text-transform: uppercase;
+    font-size: clamp(64px, 11vw, 150px); line-height: .84; color: #000; letter-spacing: -1px;
+  }
+  .role { margin-top: 18px; font-weight: 700; font-size: clamp(15px, 1.4vw, 18px); letter-spacing: .08em; text-transform: uppercase; color: #000; }
+  .lede { margin-top: 12px; font-size: clamp(17px, 1.6vw, 20px); line-height: 1.45; color: #111; max-width: 46ch; }
+  .lede b { font-weight: 700; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px;
+    border-radius: 999px; font-weight: 700; font-size: 15px; text-decoration: none;
+    border: var(--line) solid var(--ink); transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn.dark { background: var(--ink); color: var(--paper); }
+  .btn:hover { transform: translate(2px, -2px); box-shadow: -4px 4px 0 var(--ink); }
+  .btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+  .photo {
+    aspect-ratio: 4 / 4.2; border-radius: 22px; overflow: hidden;
+    border: 12px solid var(--ink); box-shadow: -8px 8px 0 var(--paper), -18px 18px 0 var(--ink);
+    margin: 0 0 18px 18px;
+  }
+  .photo img { width: 100%; height: 100%; object-fit: cover; object-position: 58% 55%; display: block; filter: grayscale(1) contrast(1.05); }
+
+  /* ---------- section with tab ---------- */
+  .sec { margin-top: 72px; }
+  .tab {
+    --tab-end: 52px; --fillet: 14px;
+    display: inline-block; background: var(--ink); color: var(--paper);
+    font-weight: 700; font-size: clamp(20px, 2.4vw, 26px); padding: 10px 14px calc(8px + var(--line)) 24px;
+    border-top-left-radius: 18px; position: relative; z-index: 1; white-space: nowrap;
+    margin-left: 0; margin-bottom: calc(-1 * var(--line)); margin-right: 72px;
+  }
+  .tab::after {
+    content: ""; position: absolute; top: 0; bottom: 0; left: calc(100% - 12px); width: 64px;
+    background: var(--ink); transform: skewX(34deg); transform-origin: 0 100%;
+    border-top-right-radius: 16px; z-index: -1;
+  }
+  /* Pied de la pente : courbe rentrante vers le cadre, comme un intercalaire */
+  .tab::before {
+    content: ""; position: absolute; bottom: 0; left: calc(100% + var(--tab-end) - var(--fillet) * .6745 - 1px);
+    width: var(--fillet); height: var(--fillet); z-index: -1;
+    background: radial-gradient(circle at 100% 0, transparent calc(var(--fillet) - .5px), var(--ink) var(--fillet));
+  }
+  .box { border: var(--line) solid var(--ink); border-radius: 0 var(--r) var(--r) var(--r); padding: clamp(18px, 3vw, 32px); }
+
+  /* ---------- filters (pills) ---------- */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 18px;
+    border-radius: 12px; font: inherit; font-size: 15px; cursor: pointer;
+    border: 0; background: #d9d6d2; color: var(--text); transition: background .15s, color .15s;
+  }
+  .pill svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; }
+  .pill:hover { background: #bdbab6; }
+  .pill[aria-pressed="true"] { background: #4a4a4a; color: #f0f0f0; }
+  .pill:focus-visible, .btn:focus-visible, .card a:focus-visible { outline: 3px solid #000; outline-offset: 3px; }
+
+  /* ---------- project cards ---------- */
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 24px; }
+  .card { display: flex; flex-direction: column; }
+  .card .tab { align-self: flex-start; font-size: 15px; padding: 7px 8px calc(6px + var(--line)) 16px; border-top-left-radius: 12px; margin-right: 52px; }
+  .card .tab { --tab-end: 36px; --fillet: 10px; }
+  .card .tab::after { width: 44px; left: calc(100% - 8px); border-top-right-radius: 11px; }
+  .card .box { flex: 1; display: flex; flex-direction: column; gap: 12px; background: var(--paper); transition: box-shadow .18s ease, transform .18s ease; }
+  .card:hover .box { box-shadow: -8px 8px 0 var(--ink); transform: translate(4px, -4px); }
+  .card h3 { font-size: 24px; line-height: 1.15; color: #111; }
+  .card h3 small { display: block; font-size: 15px; font-weight: 500; color: var(--muted); margin-top: 4px; }
+  .card p { font-size: 15.5px; line-height: 1.5; color: #333; }
+  .card ul { list-style: none; display: grid; gap: 6px; font-size: 14.5px; color: #333; }
+  .card li { padding-left: 18px; position: relative; line-height: 1.4; }
+  .card li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 7px; height: 7px; background: var(--ink); border-radius: 2px; }
+  .stack { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 6px; }
+  .stack span { font-size: 13px; padding: 4px 10px; border-radius: 8px; background: #dedad5; color: #333; }
+  .card .foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 2px dashed #c9c5c0; padding-top: 14px; }
+  .card .foot a { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; text-decoration: none; }
+  .card .foot a:hover { text-decoration: underline; }
+  .card .foot svg { width: 20px; height: 20px; fill: currentColor; }
+  .badge { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .metric { font-family: Impact, "Anton", sans-serif; font-size: 44px; line-height: 1; color: #000; }
+  .metric small { font-family: "DM Sans", sans-serif; font-size: 14px; color: var(--muted); margin-left: 6px; }
+  .card[hidden] { display: none; }
+  .shot { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: top; border-radius: 10px; border: var(--line) solid var(--ink); display: block; background: #fff; }
+  .shot.contain { object-fit: contain; padding: 6px; }
+  .card:not(.wide) .shot { margin-bottom: 18px; }
+  .card .foot a { overflow-wrap: anywhere; }
+  .card .body { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+  .card.wide { grid-column: 1 / -1; }
+  .card.wide.has-img .box { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: stretch; }
+  .card.wide .shot { height: 100%; aspect-ratio: auto; min-height: 260px; }
+  .card.wide:not(.has-img) ul { grid-template-columns: 1fr 1fr; column-gap: 24px; }
+  @media (max-width: 900px) { .card.wide:not(.has-img) ul { grid-template-columns: 1fr; } .card.wide .box { grid-template-columns: 1fr; } .card.wide .shot { aspect-ratio: 16 / 9; min-height: 0; } }
+  .card .foot a.ask { color: var(--muted); }
+
+  /* ---------- about ---------- */
+  .two { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; }
+  .job h3 { font-size: 20px; color: #111; }
+  .meta { font-size: 13px; font-weight: 700; font-style: italic; color: var(--muted); text-decoration: underline; margin: 4px 0 10px; }
+  .job p { font-size: 15.5px; line-height: 1.55; color: var(--muted); }
+  .skills { display: flex; flex-direction: column; gap: 8px; }
+  .skills div { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; border-radius: 12px; font-size: 15px; }
+  .skills svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; flex: none; }
+
+  footer { text-align: center; margin-top: 64px; font-size: 14px; color: var(--muted); }
+  footer h2 { font-family: Impact, "Anton", sans-serif; font-weight: 400; text-transform: uppercase; font-size: clamp(44px, 7vw, 88px); line-height: .9; color: #000; margin-bottom: 20px; }
+  footer .cta { justify-content: center; margin: 0 0 32px; }
+
+  @media (max-width: 900px) {
+    .hero, .two, .grid { grid-template-columns: 1fr; }
+    .photo { max-width: 420px; }
+  }
+  @media (max-width: 640px) {
+    .sheet { margin: 12px 8px; border-radius: 24px; padding-top: 32px; }
+    .metric small { display: block; margin: 6px 0 0; }
+    .contact { position: static; transform: none; clip-path: none; height: auto; padding: 12px 16px; border-radius: 14px; flex-wrap: wrap; gap: 10px 18px; white-space: normal; margin-bottom: 24px; font-size: 14px; }
+    .card h3 { font-size: 21px; }
+    #projets > .box { padding: 14px; border-radius: 0 14px 14px 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+
+  /* ---------- démos jouables ---------- */
+  .btn.try { align-self: flex-start; cursor: pointer; font: inherit; font-weight: 700; font-size: 15px; }
+  .demo { margin: auto; width: min(1040px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); background: transparent; border: 0; padding: 0; overflow: visible; color: var(--text); }
+  .demo::backdrop { background: rgb(28 28 28 / .72); }
+  .demo .tab { font-size: 17px; }
+  .demo .box { background: var(--paper); position: relative; max-height: calc(100dvh - 90px); overflow: auto; }
+  .demo-close { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; border-radius: 50%; border: var(--line) solid var(--ink); background: var(--paper); font-size: 16px; cursor: pointer; }
+  .demo-close:hover { background: var(--ink); color: var(--paper); }
+  .demo-intro { max-width: 70ch; margin-right: 44px; font-size: 15px; line-height: 1.5; color: #333; }
+  .demo-loading, .demo-error { padding: 24px 0; font-weight: 700; }
+  .mini { font: inherit; font-size: 14px; font-weight: 700; padding: 7px 12px; border-radius: 10px; border: 2px solid var(--ink); background: var(--paper); cursor: pointer; }
+  .mini:hover, .mini[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .chess { display: grid; grid-template-columns: minmax(0, 420px) 1fr; gap: 28px; margin-top: 20px; align-items: start; }
+  .board { display: grid; grid-template-columns: repeat(8, 1fr); border: var(--line) solid var(--ink); border-radius: 10px; overflow: hidden; aspect-ratio: 1; }
+  .sq { aspect-ratio: 1; border: 0; background: #e6e1da; font-size: clamp(22px, 4.6vw, 40px); line-height: 1; cursor: pointer; color: #111; font-family: "Segoe UI Symbol", "Apple Symbols", "DejaVu Sans", serif; }
+  .sq.dark { background: #b9b3ab; }
+  .sq.white { color: #fff; -webkit-text-stroke: 1.2px #111; }
+  .sq:hover { box-shadow: inset 0 0 0 3px var(--ink); }
+  .palette { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; }
+  .tool { aspect-ratio: 1; border-radius: 8px; border: 2px solid var(--ink); background: var(--paper); font-size: 24px; cursor: pointer; font-family: "Segoe UI Symbol", "Apple Symbols", "DejaVu Sans", serif; }
+  .tool[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .chess-side { display: grid; gap: 14px; }
+  .row-actions, .side-toggle { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fen { display: grid; gap: 6px; font-weight: 700; font-size: 13px; letter-spacing: .06em; }
+  .fen input { font: 13px ui-monospace, Menlo, monospace; padding: 9px 10px; border-radius: 8px; border: 2px solid var(--ink); background: #fff; width: 100%; }
+  .fen-error { color: #a32020; font-size: 14px; min-height: 0; }
+  .bars { display: grid; gap: 9px; }
+  .bar { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label pct" "track track"; align-items: center; gap: 4px 10px; font-size: 14.5px; }
+  .bar > span:first-child { grid-area: label; } .bar .track { grid-area: track; } .bar b { grid-area: pct; }
+  .bar .track { display: block; height: 14px; border-radius: 7px; background: #dedad5; overflow: hidden; }
+  .bar .track span { display: block; height: 100%; background: #8c8781; border-radius: 7px; transition: width .25s ease; }
+  .bar.best { font-weight: 700; color: #000; }
+  .bar.best .track span { background: var(--ink); }
+  .bar b { text-align: right; font-variant-numeric: tabular-nums; }
+  .verdict { font-size: 15px; min-height: 1.4em; }
+  .verdict .ok { color: #1d6b35; font-weight: 700; } .verdict .ko { color: #a32020; font-weight: 700; }
+  @media (max-width: 760px) { .chess { grid-template-columns: 1fr; } .bar { font-size: 13.5px; } }
+  @media (prefers-reduced-motion: reduce) { .bar .track span, .gauge-fill { transition: none; } }
+  .demo-warn { margin-top: 10px; margin-right: 44px; font-size: 14.5px; padding: 10px 14px; border-radius: 10px; background: #e9e1cf; border: 2px solid #b9a77d; }
+  .cv-progress { display: grid; gap: 10px; max-width: 420px; }
+  .cv-progress .track, .gauge-track { display: block; position: relative; height: 14px; border-radius: 7px; background: #dedad5; overflow: hidden; }
+  .cv-progress .track span { display: block; height: 100%; width: 0; background: var(--ink); }
+  .xray { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; margin-top: 20px; align-items: start; }
+  .xray-view { aspect-ratio: 1; border: var(--line) solid var(--ink); border-radius: 10px; background: #000; overflow: hidden; display: grid; place-items: center; }
+  .xray-view img { max-width: 100%; max-height: 100%; display: block; }
+  .xray-credit { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+  .xray-side { display: grid; gap: 16px; }
+  .thumbs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .thumb { aspect-ratio: 1; padding: 0; border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; background: #000; cursor: pointer; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .75; }
+  .thumb[aria-pressed="true"] { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .thumb[aria-pressed="true"] img, .thumb:hover img { opacity: 1; }
+  .upload { justify-self: start; }
+  .gauge-track { height: 18px; border-radius: 9px; overflow: visible; }
+  .gauge-fill { display: block; height: 100%; width: 0; border-radius: 9px; background: #8c8781; transition: width .3s ease; }
+  .gauge-fill.pos { background: var(--ink); }
+  .gauge-mark { position: absolute; top: -5px; bottom: -5px; width: 3px; margin-left: -1px; background: #a32020; }
+  .gauge-legend { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .xray-result { font-size: 16px; }
+  .xray-result .muted { color: var(--muted); font-size: 13px; }
+  .xray-expected { font-size: 15px; }
+  .xray-expected .ok { color: #1d6b35; font-weight: 700; } .xray-expected .ko { color: #a32020; font-weight: 700; }
+  @media (max-width: 760px) { .xray { grid-template-columns: 1fr; } .thumbs { grid-template-columns: repeat(3, 1fr); } }
+
+</style>
+</head>
+<body>
+<div class="blob" aria-hidden="true"></div>
+
+<main class="sheet">
+  <nav class="contact" aria-label="Contact">
+    <a href="https://www.linkedin.com/in/milo-bousquet-0b95b125b/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4 3a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM2.5 9h3v12h-3zM9 9h2.9v1.7c.5-.9 1.7-2 3.6-2 3.1 0 4 2 4 5V21h-3v-6.5c0-1.6-.3-2.9-1.9-2.9-1.7 0-2.5 1.2-2.5 3V21H9z"/></svg>LinkedIn</a>
+    <a href="mailto:milobousquetpro@gmail.com"><svg viewBox="0 0 24 24"><path d="M2 5h20v14H2zm2 2v.5l8 5 8-5V7l-8 5z"/></svg>milobousquetpro@gmail.com</a>
+    <span><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Marseille</span>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <h1>Milo<br>Bousquet</h1>
+      <p class="role">AI Engineer · Builder produit</p>
+      <p class="lede">Étudiant en <b>3e année à EPITECH Marseille</b>, je conçois et livre des produits <b>de bout en bout</b>, de l’idée jusqu’à l’installeur. <b>Lead technique</b> sur mes projets d’équipe, je cherche <b>un stage IA / ML en startup</b>, pour à terme devenir <b>Founding Engineer IA</b>.</p>
+      <div class="cta">
+        <a class="btn dark" href="#projets">Voir les projets</a>
+        <a class="btn" href="assets/Milo_Bousquet_CV.pdf" download>Télécharger le CV</a>
+        <a class="btn" href="assets/Milo_Bousquet_Resume_EN.pdf" download>Resume (EN)</a>
+        <a class="btn" href="https://github.com/Origanire" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>GitHub</a>
+      </div>
+    </div>
+    <div class="photo"><img src="assets/photo.jpg" alt="Portrait de Milo Bousquet en noir et blanc"></div>
+  </header>
+
+  <section class="sec" id="projets" aria-labelledby="t-projets">
+    <h2 class="tab" id="t-projets">Projets</h2>
+    <div class="box">
+      <div class="filters" role="group" aria-label="Filtrer les projets" id="filters"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="t-parcours">
+    <h2 class="tab" id="t-parcours">Parcours</h2>
+    <div class="two">
+      <div class="box">
+        <div class="job">
+          <h3>Chimère / Ekinops - Stagiaire en informatique</h3>
+          <div class="meta">Juillet 2025 - Décembre 2025 · Aix-en-Provence (hybride)</div>
+          <p>Bibliothèques système en Rust pour la supervision d’événements de sécurité et la conformité sous Windows. Watchers temps réel (API Win32, WMI, COM, Event Logs) qui surveillent Microsoft Defender, Bitdefender, le pare-feu et le registre. Architecture publication/souscription pour centraliser les événements, avec l’équipe R&D, sur la résilience et la visibilité système.</p>
+        </div>
+        <div class="job" style="margin-top:24px">
+          <h3>Epitech - Programme Grande École</h3>
+          <div class="meta">Marseille · Sept 2024 - Oct 2029</div>
+          <p>Pédagogie par projets : C++, réseau, IA, web, crypto. Avant : Baccalauréat Maths, Physique-Chimie, NSI (Gap, 2023). Jobs d’été en hôtellerie (Cévéo) et en maçonnerie, en 2023 et 2024.</p>
+        </div>
+        <div class="job" style="margin-top:24px">
+          <h3>Hackathons</h3>
+          <div class="meta">STMicroelectronics · smsmode</div>
+          <p><b style="color:#1e1e1e">STMicroelectronics</b> - hackathon en cours.<br><b style="color:#1e1e1e">smsmode</b> - IA appliquée aux nouveaux formats de messagerie RCS.</p>
+        </div>
+      </div>
+      <div class="box">
+        <div class="skills" id="skills"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <h2>On en parle ?</h2>
+    <div class="cta">
+      <a class="btn dark" href="mailto:milobousquetpro@gmail.com">milobousquetpro@gmail.com</a>
+      <a class="btn" href="https://www.linkedin.com/in/milo-bousquet-0b95b125b/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn" href="https://github.com/Origanire" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <p>© 2026 Milo Bousquet · Marseille</p>
+  </footer>
+</main>
+
+<script>
+  const projects = [
+    {
+      name: 'Sensai', sub: 'Assistant IA local pour le chat Twitch', cat: ['ia'], ctx: 'Epitech · Lead · équipe de 5',
+      img: 'assets/sensai.jpg', alt: 'Dashboard local de Sensai : connexion Twitch et essai privé avec le modèle',
+      link: ['https://github.com/Origanire/sensai', 'github.com/Origanire/sensai'],
+      desc: 'Un assistant IA construit sans framework LLM, qui parle en local à un modèle via Ollama. Il répond aux viewers en se souvenant d’eux et aide le streamer à préparer et résumer ses lives.',
+      points: ['RAG sur la FAQ de la chaîne, routeur vers la recherche web', 'Garde-fous évalués sur 53 attaques de manipulation', 'Masquage des données personnelles', 'Serveur MCP, CLI streamer, overlay OBS, veille web planifiée'],
+      stack: ['Python', 'Ollama', 'SQLite', 'Embeddings', 'MCP'],
+    },
+    {
+      name: 'my_torch', sub: 'Réseau de neurones écrit à la main', cat: ['ia'], ctx: 'Epitech · Lead · binôme',
+      demo: 'my_torch', demoLabel: 'Tester sur un échiquier',
+      img: 'assets/my_torch.png', fit: 'contain', alt: 'Courbes de loss et de précision de plusieurs architectures',
+      link: ['https://github.com/Origanire/my_torch', 'github.com/Origanire/my_torch'],
+      metric: ['91,8 %', 'de précision sur 72 301 positions jamais vues'],
+      desc: 'Un réseau de neurones sans PyTorch ni TensorFlow, avec NumPy seul, qui lit une position d’échecs (FEN) et prédit l’état de la partie : rien, échec ou mat, pour chaque camp.',
+      points: ['Architecture 769 → 512 → 256 → 5, ReLU, dropout 0.2, softmax', 'Adam, batch 256, régularisation L2, early stopping', '650 718 positions, ×4 par augmentation de données', '90,25 % de F1 macro'],
+      stack: ['Python', 'NumPy', 'Matplotlib'],
+    },
+    {
+      name: 'CVRIE', sub: 'Vision par ordinateur sur radiographies thoraciques', cat: ['ia'], ctx: 'Epitech · Équipe', wide: true,
+      demo: 'cvrie', demoLabel: 'Tester sur une radiographie',
+      img: 'assets/cvrie.jpg', alt: 'Onglet Performances de l’application CVRIE : AUC 0,748, sensibilité 0,80',
+      link: ['https://github.com/Origanire/cvrie', 'github.com/Origanire/cvrie'],
+      desc: 'Un prototype de recherche qui classe des radiographies thoraciques, avec une application locale pour importer une image et consulter les résultats mesurés. Traitement 100 % local, et un parti pris : ne jamais présenter un modèle comme meilleur qu’il ne l’est.',
+      points: ['288 radiographies de 288 patients (JSRT + LIDC-IDRI), sources publiques', 'Encodeurs DenseNet / ResNet gelés + classifieurs (régression logistique, SVM)', '40 configurations comparées, 600 ajustements en validation croisée', 'AUC 0,748 ; modèle 512 px écarté faute de gain régulier', 'Partie non supervisée : clustering KMeans / HDBSCAN + UMAP', 'Application Streamlit, tests pytest'],
+      stack: ['Python', 'PyTorch', 'torchvision', 'scikit-learn', 'Streamlit'],
+    },
+    {
+      name: 'NeuroWarm', sub: 'Échauffement cognitif avant de jouer', cat: ['desktop', 'ia'], ctx: 'Perso · produit livré',
+      video: 'assets/neurowarm.mp4',
+      link: ['https://neurowarm.fr', 'neurowarm.fr ↗'],
+      desc: 'Une application d’échauffement à faire juste avant une partie : réaction, attention, poursuite visuelle et visée, en 3 à 10 minutes. Publiée pour macOS et Windows.',
+      points: ['Difficulté adaptative par axe (précision, rapidité)', 'Programme personnalisé construit sur tes faiblesses mesurées', 'Profils de jeu : FPS tactique, FPS de suivi, MOBA, Sport', 'Sensibilité et FOV importés de Valorant, CS2, Apex…'],
+      stack: ['Tauri 2', 'React', 'TypeScript', 'SQLite'],
+    },
+    {
+      name: 'Lumi Dashboard', sub: 'Tableaux de bord personnalisables', cat: ['web'], ctx: 'Epitech · Lead',
+      img: 'assets/lumi.jpg', alt: 'Page d’accueil de Lumi en mode nuit',
+      link: ['https://github.com/Origanire/lumi-dashboard', 'github.com/Origanire/lumi-dashboard'],
+      desc: 'Des dashboards sauvegardés dans le compte utilisateur, avec notes, minuteur de concentration et widgets. L’interface React parle à une API Rust.',
+      points: ['5 intégrations : GitHub, Spotify, Gmail, Google Calendar, Open-Meteo', 'Assistant IA Mistral', 'API Axum documentée en OpenAPI, migrations SQLx', 'Base PostgreSQL via Docker Compose'],
+      stack: ['React', 'Vite', 'Rust', 'Axum', 'PostgreSQL', 'Docker'],
+    },
+    {
+      name: 'R-Type', sub: 'Moteur de jeu multijoueur en réseau', cat: ['systeme'], ctx: 'Epitech · Lead · équipe de 4',
+      link: ['https://github.com/Origanire/r-type', 'github.com/Origanire/r-type'],
+      desc: 'Un shoot’em up jusqu’à 4 joueurs, construit sur notre propre moteur data-driven : les jeux se décrivent en JSON et en Python, sans une ligne de C++.',
+      points: ['Serveur autoritaire à 60 ticks/s, protocole UDP binaire', 'Snapshots delta, messages fiables, mesures sous latence et perte (netem)', 'ECS, physique, rendu, audio, scripting en modules indépendants', 'Plugins chargés en .so / .dll, lobby, chat, mode versus'],
+      stack: ['C++20', 'UDP', 'Python', 'CMake', 'vcpkg'],
+    },
+    {
+      name: 'LoL Manager', sub: 'Jeu de management esport', cat: ['desktop'], ctx: 'Perso',
+      desc: 'Un jeu de management d’équipe League of Legends façon Football Manager, avec les vraies ligues (LCK, LPL, LEC, LCS…). Gratuit, non officiel.',
+      points: ['Draft, plan de jeu et matchs simulés sur une minimap', 'Saisons, mercato, entraînement, staff, carrière infinie', 'Pipeline de données réelles vers une base SQLite', 'Installeurs macOS / Windows publiés par GitHub Actions'],
+      stack: ['TypeScript', 'Tauri', 'SQLite', 'GitHub Actions'],
+    },
+    {
+      name: 'Raytracer', sub: 'Moteur de rendu 3D par lancer de rayons', cat: ['systeme'], ctx: 'Epitech',
+      wide: true, img: 'assets/raytracer.jpg', link: ['https://github.com/Origanire/Raytracing-image-generator', 'github.com/Origanire/Raytracing-image-generator'],
+      desc: 'Un raytracer modulaire : primitives, matériaux et lumières chargés dynamiquement en plugins, scènes décrites en fichiers de configuration.',
+      points: ['Architecture plugins (.so) et factories', 'BVH et multithreading pour le rendu', 'Réflexions, brouillard, occlusion ambiante, tores, Möbius…'],
+      stack: ['C++', 'SFML', 'libconfig'],
+    },
+    {
+      name: 'my_pgp', sub: 'Cryptographie implémentée de zéro', cat: ['systeme'], ctx: 'Epitech · Lead',
+      link: ['https://github.com/Origanire/my_pgp', 'github.com/Origanire/my_pgp'],
+      desc: 'Une implémentation pédagogique, sans aucune dépendance, des chiffrements symétriques, asymétriques et hybrides façon PGP.',
+      points: ['XOR, AES-128/192/256, RSA avec génération de clés', 'Schémas hybrides PGP-XOR et PGP-AES', 'Tests, benchmarks et démonstrations de sécurité'],
+      stack: ['Python', 'AES', 'RSA'],
+    },
+    {
+      name: 'Netfilm', sub: 'Jeux autour du cinéma', cat: ['web'], ctx: 'Epitech · Project week',
+      link: ['https://origanire.github.io/netfilm-chill.github.io/', 'Voir le site ↗'],
+      desc: 'Une plateforme de jeux de cinéma réalisée en une semaine : un génie qui devine le film auquel tu penses, et un blind test sur les bandes-son.',
+      points: ['Backend Flask, frontend React (Vite)', 'Déployée sur GitHub Pages'],
+      stack: ['Python', 'Flask', 'React'],
+    },
+  ];
+  const filters = [['all', 'Tout'], ['ia', 'IA & ML'], ['desktop', 'Produits & apps'], ['systeme', 'Systèmes & C++'], ['web', 'Web']];
+  const search = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>';
+  const ghIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>';
+
+  const grid = document.getElementById('grid');
+  const labels = { ia: 'IA & ML', web: 'Web', desktop: 'Produit', systeme: 'Systèmes' };
+  projects.forEach(p => p.label = labels[p.cat[0]]);
+  grid.innerHTML = projects.map(p => `
+    <article class="card${p.wide ? ' wide' : ''}${p.img || p.video ? ' has-img' : ''}" data-cat="${p.cat.join(' ')}">
+      <div class="tab">${p.label}</div>
+      <div class="box">
+        ${p.video ? `<video class="shot" src="${p.video}" ${p.poster ? `poster="${p.poster}"` : ''} muted loop playsinline autoplay preload="metadata" aria-label="Démo de ${p.name}"></video>`
+          : p.img ? `<img class="shot${p.fit ? ' ' + p.fit : ''}" src="${p.img}" alt="${p.alt || 'Capture de ' + p.name}" loading="lazy">` : ''}
+        <div class="body"><h3>${p.name}<small>${p.sub}</small></h3>
+        ${p.metric ? `<div class="metric">${p.metric[0]}<small>${p.metric[1]}</small></div>` : ''}
+        <p>${p.desc}</p>
+        <ul>${p.points.map(x => `<li>${x}</li>`).join('')}</ul>
+        <div class="stack">${p.stack.map(x => `<span>${x}</span>`).join('')}</div>
+        ${p.demo ? `<button class="btn dark try" data-demo="${p.demo}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>${p.demoLabel}</button>` : ''}
+        <div class="foot">
+          <span class="badge">${p.ctx}</span>
+          ${p.link ? `<a href="${p.link[0]}" target="_blank" rel="noopener">${p.link[0].includes('github.com/') ? ghIcon : ''}${p.link[1]}</a>` : `<a href="mailto:milobousquetpro@gmail.com?subject=${encodeURIComponent('Code de ' + p.name)}" class="ask">Code sur demande →</a>`}
+        </div>
+        </div>
+      </div>
+    </article>`).join('');
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    grid.querySelectorAll('video').forEach(v => { v.removeAttribute('autoplay'); v.pause(); v.controls = true; });
+  }
+
+  const fbox = document.getElementById('filters');
+  fbox.innerHTML = filters.map(([k, l], i) => `<button class="pill" data-k="${k}" aria-pressed="${i === 0}">${l}${search}</button>`).join('');
+  fbox.addEventListener('click', e => {
+    const b = e.target.closest('.pill'); if (!b) return;
+    fbox.querySelectorAll('.pill').forEach(x => x.setAttribute('aria-pressed', x === b));
+    const k = b.dataset.k;
+    grid.querySelectorAll('.card').forEach(c => { c.hidden = k !== 'all' && !c.dataset.cat.split(' ').includes(k); });
+  });
+
+  const skills = ['LLM : RAG, agents, garde-fous, MCP', 'ML, Deep Learning, Vision', 'Livraison produit : CI, installeurs', 'Architecture logicielle modulaire', 'Backend : Rust/Axum, Flask, PostgreSQL', 'Front & desktop : React, Tauri', 'Temps réel : UDP, multithreading', 'Évaluation & tests adversariaux', 'Cryptographie : AES, RSA', 'Docker · Git · GitHub Actions', 'Python · C++ · Rust · TypeScript · SQL', 'Anglais courant · Autonomie'];
+  document.getElementById('skills').innerHTML = skills.map((s, i) => {
+    const l = Math.round(30 + i / (skills.length - 1) * 70);
+    return `<div style="background:hsl(0 0% ${l}%);color:${l < 50 ? '#ececec' : '#1e1e1e'}">${s}${search}</div>`;
+  }).join('');
+</script>
+<dialog id="demo" class="demo" aria-labelledby="demo-title">
+  <div class="tab demo-title" id="demo-title"></div>
+  <div class="box">
+    <button class="demo-close" aria-label="Fermer la démo">✕</button>
+    <div class="demo-body"></div>
+  </div>
+</dialog>
+<script type="module" src="assets/demos.js"></script>
+</body>
+</html>
