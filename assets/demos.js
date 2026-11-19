@@ -1,4 +1,6 @@
 // Démos jouables du portfolio. Tout s'exécute dans le navigateur : aucune donnée n'est envoyée.
+import { START, parseBoard, boardToFen, encode, buildModel, forward } from './net.js?v=5';
+import { DIAGRAMS, renderDiagram, renderSteps } from './diagrams.js?v=5';
 
 const dialog = document.getElementById('demo');
 const titleEl = dialog.querySelector('.demo-title');
@@ -53,6 +55,7 @@ function projectDetail(p) {
           <div class="stack">${p.stack.map(s => `<span>${s}</span>`).join('')}</div>
         </div>
       </div>
+      ${DIAGRAMS[p.id] ? `<div class="dg-panel" data-diagram-large="${p.id}"></div>` : ''}
       <div class="detail-links">${code}</div>
       ${p.demo ? '' : `<div class="detail-media">${media}</div>`}
       ${p.demo ? '<section class="detail-demo" aria-label="Démo en direct"></section>' : ''}
@@ -65,17 +68,22 @@ function openProject(id) {
   showDialog(p.name);
   bodyEl.innerHTML = projectDetail(p);
   history.replaceState(null, '', `#projet-${id}`);
+  bodyEl.querySelectorAll('[data-diagram-large]').forEach(n => n.replaceChildren(renderDiagram(n.dataset.diagramLarge, { large: true }), renderSteps(n.dataset.diagramLarge)));
   // La démo se lance d'elle-même dans la fenêtre du projet.
   if (p.demo) mountDemo(p.demo, bodyEl.querySelector('.detail-demo'));
 }
 
-dialog.querySelector('.demo-close').addEventListener('click', () => dialog.close());
-dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
-dialog.addEventListener('close', () => {
+// Nettoyage à la fermeture : appelé directement par nos boutons et, en plus, par l'événement « close » (touche Échap).
+function onClosed() {
   bodyEl.replaceChildren();
-  if (location.hash.startsWith('#projet-')) history.replaceState(null, '', location.pathname + location.search);
+  if (/^#(projet|demo)-/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
   if (opener && document.contains(opener)) opener.focus();
-});
+  opener = null;
+}
+const closeDialog = () => { if (dialog.open) dialog.close(); onClosed(); };
+dialog.querySelector('.demo-close').addEventListener('click', closeDialog);
+dialog.addEventListener('click', e => { if (e.target === dialog) closeDialog(); });
+dialog.addEventListener('close', () => { if (opener !== null || bodyEl.childElementCount) onClosed(); });
 
 document.addEventListener('click', e => {
   const demo = e.target.closest('[data-demo]');
@@ -100,11 +108,9 @@ window.addEventListener('hashchange', fromHash);
 
 /* ---------------------------------------------------------------- my_torch */
 
-const PIECES = 'PNBRQKpnbrqk';
 // Les pièces d'échecs sont le contenu de l'échiquier, pas une décoration.
 const GLYPH = { K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙', k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' }; // taste-skill-ignore: chess pieces are board content
 const LABELS_FR = ['Rien', 'Échec par les blancs', 'Échec par les noirs', 'Mat par les blancs', 'Mat par les noirs'];
-const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 let torchModel = null;
 
@@ -114,79 +120,11 @@ async function loadTorchModel() {
     fetch('demos/my_torch/model.json').then(r => r.json()),
     fetch('demos/my_torch/weights.bin').then(r => r.arrayBuffer()),
   ]);
-  const all = new Float32Array(buffer);
-  const t = {};
-  for (const layer of meta.layers) {
-    const size = layer.shape.reduce((a, b) => a * b, 1);
-    t[layer.name] = { data: all.subarray(layer.offset, layer.offset + size), shape: layer.shape };
-  }
-  torchModel = { meta, t };
+  torchModel = buildModel(meta, buffer);
   return torchModel;
 }
 
-function parseBoard(fen) {
-  const [board, side = 'w'] = fen.trim().split(/\s+/);
-  const rows = board.split('/');
-  if (rows.length !== 8) throw new Error('il faut 8 rangées');
-  const squares = [];
-  for (const row of rows) {
-    const line = [];
-    for (const c of row) {
-      if (/[1-8]/.test(c)) for (let i = 0; i < +c; i++) line.push(null);
-      else if (PIECES.includes(c)) line.push(c);
-      else throw new Error(`caractère « ${c} » inconnu`);
-    }
-    if (line.length !== 8) throw new Error('une rangée ne fait pas 8 cases');
-    squares.push(line);
-  }
-  if (side !== 'w' && side !== 'b') throw new Error('le trait doit être w ou b');
-  return { squares, side };
-}
-
-function boardToFen({ squares, side }) {
-  const rows = squares.map(line => {
-    let out = '', empty = 0;
-    for (const c of line) {
-      if (!c) { empty++; continue; }
-      if (empty) { out += empty; empty = 0; }
-      out += c;
-    }
-    return out + (empty || '');
-  });
-  return `${rows.join('/')} ${side} - - 0 1`;
-}
-
-// Même encodage que src/clean/fen.py : 12 plans 8x8 one-hot, puis le trait.
-function predict({ squares, side }) {
-  const { t } = torchModel;
-  const active = [];
-  squares.forEach((line, rank) => line.forEach((c, file) => {
-    if (c) active.push(PIECES.indexOf(c) * 64 + rank * 8 + file);
-  }));
-  if (side === 'w') active.push(768);
-
-  const dense = (input, w, b, relu) => {
-    const [rows, cols] = w.shape;
-    const out = Float32Array.from(b.data);
-    for (let i = 0; i < rows; i++) {
-      const v = input[i];
-      if (v === 0) continue;
-      const base = i * cols;
-      for (let j = 0; j < cols; j++) out[j] += v * w.data[base + j];
-    }
-    if (relu) for (let j = 0; j < cols; j++) if (out[j] < 0) out[j] = 0;
-    return out;
-  };
-  const x = new Float32Array(769);
-  for (const i of active) x[i] = 1;
-  const h1 = dense(x, t.weights_0, t.bias_0, true);
-  const h2 = dense(h1, t.weights_1, t.bias_1, true);
-  const logits = dense(h2, t.weights_2, t.bias_2, false);
-  const max = Math.max(...logits);
-  const exps = Array.from(logits, v => Math.exp(v - max));
-  const sum = exps.reduce((a, b) => a + b, 0);
-  return exps.map(v => v / sum);
-}
+const predict = state => forward(torchModel, encode(state)).probs;
 
 DEMOS.my_torch = {
   title: 'my_torch - en direct',

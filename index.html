@@ -47,12 +47,14 @@
   .contact svg { width: 16px; height: 16px; fill: currentColor; }
 
   /* ---------- hero ---------- */
-  .hero { display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: center; }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 28px 40px; align-items: start; }
+  .hero h1 { grid-column: 1 / -1; }
+  @media (min-width: 901px) { .hero h1 { font-size: clamp(64px, 10.6vw, 164px); white-space: nowrap; } .hero h1 br { display: none; } .hero-net { margin-top: 6px; } }
   h1 {
     font-family: Impact, "Anton", sans-serif; font-weight: 400; text-transform: uppercase;
     font-size: clamp(64px, 11vw, 150px); line-height: .84; color: #000; letter-spacing: -1px;
   }
-  .role { margin-top: 18px; font-weight: 700; font-size: clamp(20px, 2vw, 24px); line-height: 1.25; color: #000; }
+  .role { text-wrap: balance; margin-top: 0; font-weight: 700; font-size: clamp(20px, 2vw, 24px); line-height: 1.25; color: #000; }
   .lede { margin-top: 12px; font-size: clamp(17px, 1.6vw, 20px); line-height: 1.45; color: #111; max-width: 46ch; }
   .lede b { font-weight: 700; }
   .btn.icon { padding: 12px; } .btn.icon svg { width: 22px; height: 22px; }
@@ -76,7 +78,7 @@
   .photo svg { display: block; width: 100%; height: auto; }
 
   /* ---------- section with tab ---------- */
-  .sec { margin-top: 72px; }
+  .sec { margin-top: 120px; }
   .tab {
     --tab-end: 52px; --fillet: 14px;
     display: inline-block; background: var(--ink); color: var(--paper);
@@ -113,16 +115,19 @@
 
   /* ---------- project cards ---------- */
   .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
-  .card { display: flex; flex-direction: column; position: relative; cursor: pointer; transition: transform 200ms var(--ease-out), filter 200ms var(--ease-out); }
-  /* Au survol, toute la carte (onglet compris) se soulève ; l'ombre portée suit la forme réelle, encoche incluse. */
+  .card { display: flex; flex-direction: column; position: relative; cursor: pointer; transition: transform 200ms var(--ease-out); }
+  /* Au survol, toute la carte (onglet compris) monte légèrement ; pas d'ombre (le filtre d'ombre laissait des traces au rendu). */
   @media (hover: hover) and (pointer: fine) {
-    .card:hover { transform: translate(4px, -4px); filter: drop-shadow(-8px 8px 0 var(--ink)); } /* taste-skill-ignore: hover state, not at rest */
+    .card:hover { transform: translateY(-4px); }
+    .card .more { transition: transform 200ms var(--ease-out); }
+    .card:hover .more { transform: translateX(4px); }
   }
   .card:has(.open:focus-visible) .box { outline: 3px solid #000; outline-offset: 4px; }
+  @media (hover: hover) and (pointer: fine) { .card:hover .box { background: #e2dcd4; } }
   .card .tab { align-self: flex-start; font-size: 15px; padding: 7px 8px calc(6px + var(--line)) 16px; border-top-left-radius: 12px; margin-right: 52px; }
   .card .tab { --tab-end: 36px; --fillet: 10px; }
   .card .tab::after { width: 44px; left: calc(100% - 8px); border-top-right-radius: 11px; }
-  .card .box { flex: 1; display: flex; flex-direction: column; background: var(--paper); }
+  .card .box { flex: 1; display: flex; flex-direction: column; background: #e9e4dd; border: 0; border-radius: var(--r); }
   .shot { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: center top; border-radius: 10px; border: var(--line) solid var(--ink); display: block; background: #000; margin-bottom: 20px; }
   .card .body { display: flex; flex-direction: column; gap: 12px; flex: 1; }
   .card h3 { font-size: 24px; line-height: 1.15; color: #111; }
@@ -136,8 +141,8 @@
   .card li, .detail li { padding-left: 18px; position: relative; line-height: 1.4; }
   .card li::before, .detail li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 7px; height: 7px; background: var(--ink); border-radius: 2px; }
   .stack { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 6px; }
-  .stack span { font-size: 13px; padding: 4px 10px; border-radius: 8px; background: #dedad5; color: #333; }
-  .card .foot { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: 6px; padding-top: 14px; border-top: var(--line) solid #dedad5; }
+  .stack span { font-size: 13px; padding: 4px 10px; border-radius: 8px; background: #d6d0c8; color: #222; }
+  .card .foot { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: 6px; padding-top: 14px; border-top: var(--line) solid #d6d0c8; }
   .card .foot .more { font-weight: 700; font-size: 15px; margin-right: auto; }
   .card .foot a { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; text-decoration: none; }
   .card .foot svg { width: 20px; height: 20px; fill: currentColor; }
@@ -169,7 +174,7 @@
   .skills div { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; border-radius: 12px; font-size: 15px; }
   .skills svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; flex: none; }
 
-  footer { text-align: center; margin-top: 64px; font-size: 15px; color: var(--muted); }
+  footer { text-align: center; margin-top: 140px; font-size: 15px; color: var(--muted); }
   footer h2 { font-family: Impact, "Anton", sans-serif; font-weight: 400; text-transform: uppercase; font-size: clamp(44px, 7vw, 88px); line-height: .9; color: #000; margin-bottom: 20px; }
   footer .cta { justify-content: center; margin: 0 0 32px; }
 
@@ -260,13 +265,94 @@
 
   /* ---------- entrées au défilement (le contenu reste visible sans JS) ---------- */
   @media (prefers-reduced-motion: no-preference) {
-    .js .rise { opacity: 0; translate: 0 24px; transition: opacity 600ms var(--ease-out), translate 600ms var(--ease-out), transform 200ms var(--ease-out), filter 200ms var(--ease-out); transition-delay: calc(var(--i, 0) * 70ms), calc(var(--i, 0) * 70ms), 0ms, 0ms; }
+    .js .rise { opacity: 0; translate: 0 24px; transition: opacity 600ms var(--ease-out), translate 600ms var(--ease-out), transform 200ms var(--ease-out); transition-delay: calc(var(--i, 0) * 70ms), calc(var(--i, 0) * 70ms), 0ms; }
     .js .rise.in { opacity: 1; translate: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .demo[open] { animation: none; }
     .btn, .pill, .card .box { transition: none; }
   }
+
+  /* ---------- réseau en direct (premier écran) ---------- */
+  .hero-net { display: grid; gap: 12px; }
+  .livenet { display: block; width: 100%; padding: 16px 16px 12px; border: 0; border-radius: var(--r); background: var(--ink); color: var(--paper); cursor: pointer; text-align: left; font: inherit; transition: transform 200ms var(--ease-out); }
+  .livenet:active { transform: scale(.99); }
+  .livenet:focus-visible { outline: 3px solid #000; outline-offset: 4px; }
+  .ln-svg { display: block; width: 100%; height: auto; }
+  .ln-svg .sq-l { fill: #d9d3cb; } .ln-svg .sq-d { fill: #a8a29a; }
+  .ln-svg .pc { font-size: 18px; font-family: "Segoe UI Symbol", "Apple Symbols", "DejaVu Sans", serif; }
+  .ln-svg .pc-w { fill: #fff; stroke: #111; stroke-width: .9; } .ln-svg .pc-b { fill: #111; }
+  .ln-svg .n { fill: #f2eee9; fill-opacity: calc(.12 + var(--a, 0) * .88); stroke: #6b6762; stroke-width: 1; transition: fill-opacity 400ms var(--ease-out); }
+  .ln-svg .n2 { transition-delay: 120ms; } .ln-svg .n3 { transition-delay: 240ms; }
+  .ln-svg .lk { stroke: #f2eee9; stroke-width: 1; stroke-opacity: calc(.04 + var(--a, 0) * .38); }
+  .ln-svg .ln-label, .ln-svg .ln-pct { font-size: 15px; fill: #bdb8b1; font-family: "DM Sans", sans-serif; }
+  .ln-svg .best .ln-label, .ln-svg .best .ln-pct { fill: #fff; font-weight: 700; }
+  .ln-svg .ln-axis { font-size: 13px; fill: #8a857f; font-family: "DM Sans", sans-serif; }
+  .ln-caption { margin-top: 8px; font-size: 14px; color: #d6d1ca; line-height: 1.4; }
+  .ln-caption .mark { vertical-align: -.2em; }
+  .ln-caption .mark.ok { stroke: #7fd394; } .ln-caption .mark.ko { stroke: #ff8a8a; }
+  .ln-hint { font-size: 15px; line-height: 1.5; color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { .ln-svg .n { transition: none; } }
+
+  /* ---------- bande de preuves ---------- */
+  .proofs { margin-top: 56px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; background: #34312e; border-radius: var(--r); overflow: hidden; }
+  .proofs a { display: grid; gap: 8px; align-content: start; padding: 34px 24px 34px; background: var(--ink); color: var(--paper); text-decoration: none; transition: background-color 200ms ease; }
+  @media (hover: hover) and (pointer: fine) { .proofs a:hover { background: #2a2826; } .proofs a:hover .pp { transform: translateX(4px); } }
+  .proofs a:focus-visible { outline: 3px solid var(--paper); outline-offset: -6px; }
+  .pv { font-family: Impact, "Anton", sans-serif; font-size: clamp(44px, 4.6vw, 64px); line-height: 1; font-variant-numeric: tabular-nums; }
+  .pc { font-size: 15px; line-height: 1.4; color: #d6d1ca; }
+  .pp { display: inline-block; font-size: 15px; font-weight: 700; color: #fff; transition: transform 200ms var(--ease-out); }
+  @media (max-width: 900px) { .proofs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .proofs { grid-template-columns: 1fr; } }
+
+  /* ---------- schémas d'architecture ---------- */
+  .dg-card, .dg-panel { background: var(--ink); border-radius: 12px; display: grid; place-items: center; }
+  .dg-card { aspect-ratio: 16 / 10; margin-bottom: 20px; padding: 22px; }
+  .dg-panel { margin-top: 28px; padding: 18px 14px; }
+  .dg { display: block; width: 100%; height: auto; }
+  .dg .dg-node rect { fill: #2a2826; stroke: #8a857f; stroke-width: 1.5; }
+  .dg .dg-node text { fill: #f2eee9; font: 600 15px "DM Sans", sans-serif; }
+  .dg-large .dg-node text { font-size: 14px; font-weight: 500; }
+  .dg .dg-edge { fill: none; stroke: #8a857f; stroke-width: 1.6; }
+  .dg .dg-arrow { fill: #8a857f; }
+  .dg .dg-dot { fill: #f2eee9; }
+  .dg:not(.dg-large) .dg-node text { font-size: 16px; }
+  .dg .dg-title { fill: #a8a29a; font: 500 15px "DM Sans", sans-serif; }
+  .chips { width: 100%; display: grid; gap: 14px; align-content: center; height: 100%; }
+  .chips-title { font-size: 14px; color: #a8a29a; text-align: center; }
+  .chips-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 6px; }
+  .step { display: inline-flex; align-items: center; gap: 6px; }
+  .chip { padding: 8px 10px; border-radius: 10px; border: 1.5px solid #8a857f; color: var(--paper); font-size: 14px; font-weight: 600; background: #2a2826; white-space: nowrap; }
+  .chip-arrow { color: #8a857f; font-size: 14px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .chip { animation: chip-pulse calc(var(--n) * 700ms) step-end infinite; animation-delay: calc(var(--i) * 700ms); }
+    @keyframes chip-pulse { 0% { background: var(--paper); color: var(--ink); border-color: var(--paper); } 22%, 100% { background: #2a2826; color: var(--paper); border-color: #8a857f; } }
+  }
+  .dg-panel .steps { display: none; }
+  .steps { list-style: none; display: grid; gap: 8px; width: 100%; }
+  .steps li { padding: 10px 14px; border-radius: 10px; background: #2a2826; color: var(--paper); font-size: 15px; font-weight: 600; position: relative; }
+  .steps li:not(:first-child):not(.same-level)::before { content: "↓"; display: block; position: absolute; top: -21px; left: 18px; color: #8a857f; font-weight: 400; }
+  .steps li.same-level { margin-left: 22px; }
+  .ln-outs { display: none; list-style: none; margin-top: 10px; gap: 4px; }
+  .ln-outs li { display: flex; justify-content: space-between; font-size: 15px; color: #bdb8b1; }
+  .ln-outs li.best { color: #fff; font-weight: 700; }
+  @media (max-width: 760px) {
+    .dg-card { aspect-ratio: auto; min-height: 150px; }
+    .dg-panel .dg { display: none; } .dg-panel .steps { display: grid; } .steps { gap: 18px; }
+    .ln-svg .ln-label, .ln-svg .ln-pct { display: none; } .ln-outs { display: grid; }
+  }
+
+  /* ---------- parcours ---------- */
+  .parcours { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 32px 48px; padding-top: 28px; }
+  .parcours-side { display: grid; gap: 28px; align-content: start; }
+  .timeline { list-style: none; display: grid; gap: 30px; position: relative; padding-left: 30px; }
+  .timeline::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 3px; border-radius: 2px; background: #d6d0c8; }
+  .timeline li { position: relative; }
+  .timeline li::before { content: ""; position: absolute; left: -30px; top: 5px; width: 17px; height: 17px; border-radius: 50%; background: var(--ink); box-sizing: border-box; border: 4px solid var(--paper); }
+  .timeline .when { font-size: 15px; font-weight: 700; color: var(--muted); }
+  .timeline h3 { font-size: 22px; color: #111; margin: 2px 0 6px; }
+  .timeline p { font-size: 16px; line-height: 1.55; color: #222; }
+  @media (max-width: 900px) { .parcours { grid-template-columns: 1fr; } .parcours-side .photo { max-width: 420px; } }
 </style>
 </head>
 <body>
@@ -280,8 +366,8 @@
   </nav>
 
   <header class="hero">
+    <h1>Milo <br>Bousquet</h1>
     <div>
-      <h1>Milo<br>Bousquet</h1>
       <p class="role">AI Engineer, en recherche de stage IA / ML</p>
       <p class="lede">Étudiant en <b>3e année à EPITECH Marseille</b>, je conçois et livre des produits <b>de bout en bout</b>, de l’idée jusqu’à l’installeur. <b>Lead technique</b> sur mes projets d’équipe, je cherche <b>un stage IA / ML en startup</b>, pour à terme devenir <b>Founding Engineer IA</b>.</p>
       <div class="cta">
@@ -294,8 +380,20 @@
         <button class="link" data-demo="my_torch">tester my_torch</button> ·
         <button class="link" data-demo="cvrie">tester CVRIE</button></p>
     </div>
-    <div class="photo"><svg class="frame" viewBox="0 0 622 495" role="img" aria-label="Portrait de Milo Bousquet en noir et blanc"><defs><clipPath id="ph"><path d="M26,16H596A10,10 0 0 1 606,26V469A10,10 0 0 1 596,479H148A10,10 0 0 1 138,469V142A38,38 0 0 0 100,104H26A10,10 0 0 1 16,94V26A10,10 0 0 1 26,16Z"/></clipPath></defs><path d="M26,0H596A26,26 0 0 1 622,26V469A26,26 0 0 1 596,495H148A26,26 0 0 1 122,469V142A22,22 0 0 0 100,120H26A26,26 0 0 1 0,94V26A26,26 0 0 1 26,0Z" fill="#1c1c1c"/><image href="assets/photo.jpg" x="-27.5" y="-350.9" width="649.5" height="1154.5" clip-path="url(#ph)"/></svg></div>
+    <div class="hero-net">
+      <button class="livenet" type="button" aria-label="Réseau my_torch en direct : ouvrir la démo complète">
+        <p class="ln-caption">Réseau my_torch : 769 → 512 → 256 → 5. Cliquer pour ouvrir la démo.</p>
+      </button>
+      <p class="ln-hint">Mon réseau de neurones, écrit sans bibliothèque d’IA, tourne ici en direct sur des positions d’échecs jamais vues. Survole pour mettre en pause, clique pour jouer.</p>
+    </div>
   </header>
+
+  <section class="proofs" aria-label="Résultats mesurés">
+    <a href="#projet-my_torch"><span class="pv" data-proof data-value="91.8" data-decimals="1" data-suffix=" %">91,8 %</span><span class="pc">de bonnes réponses sur 72 301 positions jamais vues <b class="pp">my_torch →</b></span></a>
+    <a href="#projet-cvrie"><span class="pv" data-proof data-value="0.748" data-decimals="3">0,748</span><span class="pc">d’AUC sur 50 patients de test <b class="pp">CVRIE →</b></span></a>
+    <a href="#projet-sensai"><span class="pv" data-proof data-value="48" data-decimals="0" data-suffix="/53">48/53</span><span class="pc">attaques de manipulation gérées comme prévu <b class="pp">Sensai →</b></span></a>
+    <a href="#projet-r-type"><span class="pv" data-proof data-value="60" data-decimals="0">60</span><span class="pc">mises à jour par seconde sur le serveur de jeu <b class="pp">R-Type →</b></span></a>
+  </section>
 
   <section class="sec" id="projets" aria-labelledby="t-projets">
     <h2 class="tab" id="t-projets">Projets</h2>
@@ -307,27 +405,33 @@
 
   <section class="sec" aria-labelledby="t-parcours">
     <h2 class="tab" id="t-parcours">Parcours</h2>
-    <div class="two">
-      <div class="box">
-        <div class="job">
-          <h3>Chimère / Ekinops - Stagiaire en informatique</h3>
-          <div class="meta">Juillet 2025 - Décembre 2025 · Aix-en-Provence (hybride)</div>
-          <p>Bibliothèques système en Rust pour la supervision d’événements de sécurité et la conformité sous Windows. Watchers temps réel (API Win32, WMI, COM, Event Logs) qui surveillent Microsoft Defender, Bitdefender, le pare-feu et le registre. Architecture publication/souscription pour centraliser les événements, avec l’équipe R&D, sur la résilience et la visibilité système.</p>
-        </div>
-        <div class="job" style="margin-top:24px">
-          <h3>Epitech - Programme Grande École</h3>
-          <div class="meta">Marseille · Sept 2024 - Oct 2029</div>
-          <p>Pédagogie par projets : C++, réseau, IA, web, crypto. Avant : Baccalauréat Maths, Physique-Chimie, NSI (Gap, 2023). Jobs d’été en hôtellerie (Cévéo) et en maçonnerie, en 2023 et 2024.</p>
-        </div>
-        <div class="job" style="margin-top:24px">
-          <h3>Hackathons</h3>
-          <div class="meta">STMicroelectronics · smsmode</div>
-          <p><b style="color:#1e1e1e">STMicroelectronics</b> - hackathon en cours.<br><b style="color:#1e1e1e">smsmode</b> - IA appliquée aux nouveaux formats de messagerie RCS.</p>
-        </div>
-      </div>
-      <div class="box">
+    <div class="parcours">
+      <div class="parcours-side">
+        <div class="photo"><svg class="frame" viewBox="0 0 622 495" role="img" aria-label="Portrait de Milo Bousquet en noir et blanc"><defs><clipPath id="ph"><path d="M26,16H596A10,10 0 0 1 606,26V469A10,10 0 0 1 596,479H148A10,10 0 0 1 138,469V142A38,38 0 0 0 100,104H26A10,10 0 0 1 16,94V26A10,10 0 0 1 26,16Z"/></clipPath></defs><path d="M26,0H596A26,26 0 0 1 622,26V469A26,26 0 0 1 596,495H148A26,26 0 0 1 122,469V142A22,22 0 0 0 100,120H26A26,26 0 0 1 0,94V26A26,26 0 0 1 26,0Z" fill="#1c1c1c"/><image href="assets/photo.jpg" x="-27.5" y="-350.9" width="649.5" height="1154.5" clip-path="url(#ph)"/></svg></div>
         <div class="skills" id="skills"></div>
       </div>
+      <ol class="timeline">
+        <li>
+          <span class="when">Juillet à décembre 2025</span>
+          <h3>Stage chez Chimère / Ekinops</h3>
+          <p>Bibliothèques système en Rust pour superviser la sécurité sous Windows : surveillance en temps réel de Microsoft Defender, Bitdefender, du pare-feu et du registre (API Win32, WMI, COM, journaux d’événements), centralisées par publication / souscription, avec l’équipe R&amp;D.</p>
+        </li>
+        <li>
+          <span class="when">Depuis 2024</span>
+          <h3>Epitech, Programme Grande École</h3>
+          <p>Marseille, jusqu’en 2029. Pédagogie par projets en équipe : C++, réseau, IA, web, cryptographie. Lead technique sur Sensai, R-Type, my_torch, Lumi et my_pgp.</p>
+        </li>
+        <li>
+          <span class="when">En parallèle</span>
+          <h3>Hackathons</h3>
+          <p><b>smsmode</b> : IA appliquée aux nouveaux formats de messagerie RCS. <b>STMicroelectronics</b> : en cours.</p>
+        </li>
+        <li>
+          <span class="when">2020 à 2023</span>
+          <h3>Baccalauréat, à Gap</h3>
+          <p>Spécialités maths, physique-chimie et NSI. Jobs d’été en hôtellerie et en maçonnerie en 2023 et 2024.</p>
+        </li>
+      </ol>
     </div>
   </section>
 
@@ -345,7 +449,7 @@
 <script>
   const projects = [
     {
-      id: 'sensai', name: 'Sensai', sub: 'Assistant IA local pour Twitch', cat: ['ia'], label: 'IA & ML',
+      id: 'sensai', diagram: true, name: 'Sensai', sub: 'Assistant IA local pour Twitch', cat: ['ia'], label: 'IA & ML',
       img: 'assets/sensai.jpg', alt: 'Dashboard local de Sensai : connexion Twitch et essai privé avec le modèle',
       link: ['https://github.com/Origanire/sensai', 'Code sur GitHub'],
       pitch: 'Un assistant qui répond aux spectateurs d’un live Twitch, se souvient d’eux et refuse les tentatives de manipulation. Il tourne sur l’ordinateur du streamer, sans service payant.',
@@ -356,7 +460,7 @@
       stack: ['Python', 'Ollama', 'SQLite', 'Embeddings', 'MCP'],
     },
     {
-      id: 'my_torch', name: 'my_torch', sub: 'Réseau de neurones écrit à la main', cat: ['ia'], label: 'IA & ML',
+      id: 'my_torch', diagram: true, name: 'my_torch', sub: 'Réseau de neurones écrit à la main', cat: ['ia'], label: 'IA & ML',
       demo: 'my_torch', demoLabel: 'Tester en direct',
       img: 'assets/card-my_torch.jpg', alt: 'Démo de my_torch : échiquier et probabilités prédites par le réseau',
       link: ['https://github.com/Origanire/my_torch', 'Code sur GitHub'],
@@ -369,7 +473,7 @@
       stack: ['Python', 'NumPy', 'Matplotlib'],
     },
     {
-      id: 'cvrie', name: 'CVRIE', sub: 'Vision par ordinateur sur radiographies', cat: ['ia'], label: 'IA & ML',
+      id: 'cvrie', diagram: true, name: 'CVRIE', sub: 'Vision par ordinateur sur radiographies', cat: ['ia'], label: 'IA & ML',
       demo: 'cvrie', demoLabel: 'Tester en direct',
       img: 'assets/card-cvrie.jpg', alt: 'Radiographie thoracique d’exemple (LIDC-IDRI, CC BY 3.0) utilisée par la démo',
       link: ['https://github.com/Origanire/cvrie', 'Code sur GitHub'],
@@ -414,7 +518,7 @@
       stack: ['C++', 'SFML', 'libconfig'],
     },
     {
-      id: 'r-type', name: 'R-Type', sub: 'Jeu en ligne sur notre propre moteur', cat: ['systeme'], label: 'Systèmes',
+      id: 'r-type', diagram: true, name: 'R-Type', sub: 'Jeu en ligne sur notre propre moteur', cat: ['systeme'], label: 'Systèmes',
       link: ['https://github.com/Origanire/r-type', 'Code sur GitHub'],
       pitch: 'Un jeu de tir en ligne jusqu’à 4 joueurs, construit sur un moteur de jeu que nous avons écrit nous-mêmes.',
       role: 'Lead technique d’une équipe de 4 (projet Epitech).',
@@ -461,12 +565,11 @@
   const grid = document.getElementById('grid');
   grid.innerHTML = projects.map(p => `
     <article class="card" data-cat="${p.cat.join(' ')}">
-      <div class="tab">${p.label}</div>
       <div class="box">
-        ${p.video ? `<video class="shot" src="${p.video}" poster="${p.poster}" muted loop playsinline autoplay preload="metadata" aria-hidden="true"></video>`
+        ${p.diagram ? `<div class="dg-card" data-diagram="${p.id}"></div>` : p.video ? `<video class="shot" src="${p.video}" poster="${p.poster}" muted loop playsinline autoplay preload="metadata" aria-hidden="true"></video>`
           : p.img ? `<img class="shot" src="${p.img}" alt="${p.alt}" loading="lazy">` : ''}
         <div class="body">
-          <h3><button class="open" data-project="${p.id}">${p.name}</button><small>${p.sub}</small></h3>
+          <h3><button class="open" data-project="${p.id}">${p.name}</button><small>${p.label} · ${p.sub}</small></h3>
           <p>${p.pitch}</p>
           <p class="myrole"><b>Mon rôle :</b> ${p.role}</p>
           <ul>${p.metric ? `<li><b>${p.metric[0]}</b> ${p.metric[1]}</li>` : ''}${p.results.map(x => `<li>${x}</li>`).join('')}</ul>
@@ -504,14 +607,16 @@
   // Entrées : titre, texte, image, puis chaque carte, déclenchées une fois à l'arrivée à l'écran.
   document.documentElement.classList.add('js');
   const groups = [
-    ['.hero h1', '.hero .role', '.hero .lede', '.hero .cta', '.hero .aside', '.hero .live', '.hero .photo'],
-    ...[...document.querySelectorAll('.sec')].map(sec => [sec.querySelector(':scope > .tab'), sec.querySelector(':scope > .box')]),
+    ['.hero h1', '.hero .role', '.hero .lede', '.hero .cta', '.hero .aside', '.hero .live', '.hero .hero-net'],
+    ...[...document.querySelectorAll('.sec')].map(sec => [sec.querySelector(':scope > .tab'), sec.querySelector(':scope > .box, :scope > .parcours')]),
+    [...document.querySelectorAll('.timeline li')],
   ];
   groups.forEach(list => list.forEach((el, i) => {
     el = typeof el === 'string' ? document.querySelector(el) : el;
     if (el) { el.classList.add('rise'); el.style.setProperty('--i', i); }
   }));
   grid.querySelectorAll('.card').forEach((c, i) => { c.classList.add('rise'); c.style.setProperty('--i', i % 2); });
+  document.querySelectorAll('.proofs a').forEach((c, i) => { c.classList.add('rise'); c.style.setProperty('--i', i); });
   document.querySelectorAll('footer > *').forEach((el, i) => { el.classList.add('rise'); el.style.setProperty('--i', i); });
   const io = new IntersectionObserver(entries => entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
@@ -525,6 +630,14 @@
     <div class="demo-body"></div>
   </div>
 </dialog>
-<script type="module" src="assets/demos.js?v=4"></script>
+<script type="module" src="assets/demos.js?v=12"></script>
+<script type="module">
+  import { mountLiveNet } from './assets/live-net.js?v=11';
+  import { mountProofs } from './assets/proofs.js?v=1';
+  mountLiveNet(document.querySelector('.livenet'));
+  mountProofs(document.querySelector('.proofs'));
+  import { renderChips } from './assets/diagrams.js?v=5';
+  document.querySelectorAll('[data-diagram]').forEach(n => n.replaceChildren(renderChips(n.dataset.diagram)));
+</script>
 </body>
 </html>
