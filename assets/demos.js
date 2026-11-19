@@ -25,7 +25,8 @@ const html = (strings, ...values) => strings.reduce((out, s, i) => out + s + (i 
 /* ---------------------------------------------------------------- my_torch */
 
 const PIECES = 'PNBRQKpnbrqk';
-const GLYPH = { K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙', k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
+// Les pièces d'échecs sont le contenu de l'échiquier, pas une décoration.
+const GLYPH = { // taste-skill-ignore: chess pieces are board content K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙', k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
 const LABELS_FR = ['Rien', 'Échec par les blancs', 'Échec par les noirs', 'Mat par les blancs', 'Mat par les noirs'];
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -154,7 +155,7 @@ DEMOS.my_torch = {
     const verdictEl = root.querySelector('.verdict');
 
     const tools = [...'KQRBNP', ...'kqrbnp', ''];
-    paletteEl.innerHTML = tools.map(p => `<button class="tool" data-tool="${p}" aria-label="${p ? 'Poser ' + p : 'Gomme'}">${p ? GLYPH[p] + '︎' : '⌫'}</button>`).join('');
+    paletteEl.innerHTML = tools.map(p => `<button class="tool" data-tool="${p}" aria-label="${p ? 'Poser ' + p : 'Gomme'}">${p ? GLYPH[p] + '︎' : 'Gomme'}</button>`).join('');
 
     const render = () => {
       boardEl.innerHTML = state.squares.map((line, r) => line.map((c, f) => {
@@ -175,8 +176,8 @@ DEMOS.my_torch = {
         </div>`).join('');
       if (expected === null) verdictEl.textContent = '';
       else verdictEl.innerHTML = best === expected
-        ? `<span class="ok">✓</span> Réponse attendue : ${LABELS_FR[expected]}`
-        : `<span class="ko">✗</span> Réponse attendue : ${LABELS_FR[expected]}. Le réseau se trompe environ une fois sur douze.`;
+        ? `<svg class="mark ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg> Réponse attendue : ${LABELS_FR[expected]}`
+        : `<svg class="mark ko" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg> Réponse attendue : ${LABELS_FR[expected]}. Le réseau se trompe environ une fois sur douze.`;
     };
 
     boardEl.addEventListener('click', e => {
@@ -415,8 +416,8 @@ DEMOS.cvrie = {
       if (sample) {
         const truth = sample.label === 'malignant';
         expectedEl.innerHTML = truth === positive
-          ? `<span class="ok">✓</span> Diagnostic connu : ${truth ? 'nodule malin' : 'bénin'}.`
-          : `<span class="ko">✗</span> Diagnostic connu : ${truth ? 'nodule malin' : 'bénin'}. Le modèle se trompe ici, comme sur environ 30 % du test.`;
+          ? `<svg class="mark ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg> Diagnostic connu : ${truth ? 'nodule malin' : 'bénin'}.`
+          : `<svg class="mark ko" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg> Diagnostic connu : ${truth ? 'nodule malin' : 'bénin'}. Le modèle se trompe ici, comme sur environ 30 % du test.`;
       }
     };
 
