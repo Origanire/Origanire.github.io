@@ -65,11 +65,11 @@
   .btn {
     display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px;
     border-radius: 999px; font-weight: 700; font-size: 15px; text-decoration: none;
-    border: var(--line) solid var(--ink); transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+    border: var(--line) solid var(--ink); transition: transform 160ms var(--ease-out), background-color 160ms ease, color 160ms ease;
   }
   .btn:active { transform: scale(.97); }
   .btn.dark { background: var(--ink); color: var(--paper); }
-  @media (hover: hover) and (pointer: fine) { .btn:hover { transform: translate(2px, -2px); box-shadow: -4px 4px 0 var(--ink); } } /* taste-skill-ignore: hover state, not at rest */
+  @media (hover: hover) and (pointer: fine) { .btn:hover { transform: translateY(-2px); } .btn:not(.dark):hover { background: var(--ink); color: var(--paper); } .btn.dark:hover { background: #000; } }
   .btn svg { width: 18px; height: 18px; fill: currentColor; }
 
   .photo { margin: 0; }
@@ -112,41 +112,53 @@
   .pill:focus-visible, .btn:focus-visible, .card a:focus-visible { outline: 3px solid #000; outline-offset: 3px; }
 
   /* ---------- project cards ---------- */
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 24px; }
-  .card { display: flex; flex-direction: column; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
+  .card { display: flex; flex-direction: column; position: relative; cursor: pointer; transition: transform 200ms var(--ease-out), filter 200ms var(--ease-out); }
+  /* Au survol, toute la carte (onglet compris) se soulève ; l'ombre portée suit la forme réelle, encoche incluse. */
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover { transform: translate(4px, -4px); filter: drop-shadow(-8px 8px 0 var(--ink)); } /* taste-skill-ignore: hover state, not at rest */
+  }
+  .card:has(.open:focus-visible) .box { outline: 3px solid #000; outline-offset: 4px; }
   .card .tab { align-self: flex-start; font-size: 15px; padding: 7px 8px calc(6px + var(--line)) 16px; border-top-left-radius: 12px; margin-right: 52px; }
   .card .tab { --tab-end: 36px; --fillet: 10px; }
   .card .tab::after { width: 44px; left: calc(100% - 8px); border-top-right-radius: 11px; }
-  .card .box { flex: 1; display: flex; flex-direction: column; gap: 12px; background: var(--paper); transition: box-shadow 200ms var(--ease-out), transform 200ms var(--ease-out); }
-  @media (hover: hover) and (pointer: fine) { .card:hover .box { box-shadow: -8px 8px 0 var(--ink); transform: translate(4px, -4px); } } /* taste-skill-ignore: hover state, not at rest */
+  .card .box { flex: 1; display: flex; flex-direction: column; background: var(--paper); }
+  .shot { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: center top; border-radius: 10px; border: var(--line) solid var(--ink); display: block; background: #000; margin-bottom: 20px; }
+  .card .body { display: flex; flex-direction: column; gap: 12px; flex: 1; }
   .card h3 { font-size: 24px; line-height: 1.15; color: #111; }
   .card h3 small { display: block; font-size: 16px; font-weight: 500; color: var(--muted); margin-top: 4px; }
-  .card p { font-size: 16px; line-height: 1.5; color: #333; }
-  .card ul { list-style: none; display: grid; gap: 6px; font-size: 15px; color: #333; }
-  .card li { padding-left: 18px; position: relative; line-height: 1.4; }
-  .card li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 7px; height: 7px; background: var(--ink); border-radius: 2px; }
+  /* Le titre est le bouton de la carte (clavier) ; un clic n'importe où sur la carte l'ouvre aussi. */
+  .open { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; }
+  .open:focus-visible { outline: none; }
+  .card p { font-size: 16px; line-height: 1.5; color: #222; }
+  .card .myrole { font-size: 15px; color: #222; }
+  .card ul { list-style: none; display: grid; gap: 6px; font-size: 15px; color: #222; }
+  .card li, .detail li { padding-left: 18px; position: relative; line-height: 1.4; }
+  .card li::before, .detail li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 7px; height: 7px; background: var(--ink); border-radius: 2px; }
   .stack { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 6px; }
   .stack span { font-size: 13px; padding: 4px 10px; border-radius: 8px; background: #dedad5; color: #333; }
-  .card .foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; padding-top: 14px; border-top: var(--line) solid #dedad5; }
+  .card .foot { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: 6px; padding-top: 14px; border-top: var(--line) solid #dedad5; }
+  .card .foot .more { font-weight: 700; font-size: 15px; margin-right: auto; }
   .card .foot a { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; text-decoration: none; }
-  .card .foot a:hover { text-decoration: underline; }
   .card .foot svg { width: 20px; height: 20px; fill: currentColor; }
-  .badge { font-size: 14px; font-weight: 700; color: var(--muted); }
+  @media (hover: hover) and (pointer: fine) { .card .foot a:hover { text-decoration: underline; } .card:hover .more { text-decoration: underline; } }
   .card .metric { font-size: 44px; line-height: 1; }
   .metric { font-family: Impact, "Anton", sans-serif; font-size: 44px; line-height: 1; color: #000; }
   .metric small { font-family: "DM Sans", sans-serif; font-size: 15px; color: var(--muted); margin-left: 6px; }
   .card[hidden] { display: none; }
-  .shot { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: top; border-radius: 10px; border: var(--line) solid var(--ink); display: block; background: #fff; }
-  .shot.contain { object-fit: contain; padding: 6px; }
-  .card:not(.wide) .shot { margin-bottom: 18px; }
-  .card .foot a { overflow-wrap: anywhere; }
-  .card .body { display: flex; flex-direction: column; gap: 12px; flex: 1; }
-  .card.wide { grid-column: 1 / -1; }
-  .card.wide.has-img .box { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: stretch; }
-  .card.wide .shot { height: 100%; aspect-ratio: auto; min-height: 260px; }
-  .card.wide:not(.has-img) ul { grid-template-columns: 1fr 1fr; column-gap: 24px; }
-  @media (max-width: 900px) { .card.wide:not(.has-img) ul { grid-template-columns: 1fr; } .card.wide.has-img .box { grid-template-columns: 1fr; } .card.wide .shot { aspect-ratio: 16 / 9; min-height: 0; } }
-  .card .foot a.ask { color: var(--muted); }
+
+  /* ---------- fenêtre de détail d'un projet ---------- */
+  .detail-media { margin-top: 28px; } .detail .shot { margin-bottom: 0; }
+  .detail-head { margin-right: 52px; }
+  .detail-head p { font-size: 18px; line-height: 1.5; color: #111; max-width: 62ch; }
+  .detail-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 40px; margin-top: 24px; }
+  .detail h4 { font-size: 17px; color: #000; margin-bottom: 10px; }
+  .detail ul { list-style: none; display: grid; gap: 8px; font-size: 16px; color: #222; }
+  .detail .ctx { font-size: 16px; line-height: 1.55; color: #222; }
+  .detail .stack { margin-top: 14px; }
+  .detail-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .detail-demo { margin-top: 32px; padding-top: 24px; border-top: var(--line) solid #dedad5; }
+  @media (max-width: 760px) { .detail-cols { grid-template-columns: 1fr; } .detail-head p { font-size: 17px; } }
 
   /* ---------- about ---------- */
   .two { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; }
@@ -175,7 +187,7 @@
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 
   /* ---------- démos jouables ---------- */
-  .btn.try { align-self: flex-start; cursor: pointer; font: inherit; font-weight: 700; font-size: 15px; }
+  .btn.try { align-self: flex-start; cursor: pointer; font: inherit; font-weight: 700; font-size: 15px; padding: 10px 18px; }
   .demo { margin: auto; width: min(1040px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); background: transparent; border: 0; padding: 0; overflow: visible; color: var(--text); }
   .demo::backdrop { background: rgb(28 28 28 / .72); }
   .demo[open] { animation: demo-in 220ms var(--ease-out); }
@@ -248,8 +260,8 @@
 
   /* ---------- entrées au défilement (le contenu reste visible sans JS) ---------- */
   @media (prefers-reduced-motion: no-preference) {
-    .js .rise { opacity: 0; transform: translateY(24px); transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out); transition-delay: calc(var(--i, 0) * 70ms); }
-    .js .rise.in { opacity: 1; transform: none; }
+    .js .rise { opacity: 0; translate: 0 24px; transition: opacity 600ms var(--ease-out), translate 600ms var(--ease-out), transform 200ms var(--ease-out), filter 200ms var(--ease-out); transition-delay: calc(var(--i, 0) * 70ms), calc(var(--i, 0) * 70ms), 0ms, 0ms; }
+    .js .rise.in { opacity: 1; translate: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .demo[open] { animation: none; }
@@ -333,106 +345,137 @@
 <script>
   const projects = [
     {
-      name: 'Sensai', sub: 'Assistant IA local pour le chat Twitch', cat: ['ia'], ctx: 'Epitech · Lead · équipe de 5',
+      id: 'sensai', name: 'Sensai', sub: 'Assistant IA local pour Twitch', cat: ['ia'], label: 'IA & ML',
       img: 'assets/sensai.jpg', alt: 'Dashboard local de Sensai : connexion Twitch et essai privé avec le modèle',
-      link: ['https://github.com/Origanire/sensai', 'github.com/Origanire/sensai'],
-      desc: 'Un assistant IA construit sans framework LLM, qui parle en local à un modèle via Ollama. Il répond aux viewers en se souvenant d’eux et aide le streamer à préparer et résumer ses lives.',
-      points: ['RAG sur la FAQ de la chaîne, routeur vers la recherche web', 'Garde-fous évalués sur 53 attaques de manipulation', 'Masquage des données personnelles', 'Serveur MCP, CLI streamer, overlay OBS, veille web planifiée'],
+      link: ['https://github.com/Origanire/sensai', 'Code sur GitHub'],
+      pitch: 'Un assistant qui répond aux spectateurs d’un live Twitch, se souvient d’eux et refuse les tentatives de manipulation. Il tourne sur l’ordinateur du streamer, sans service payant.',
+      role: 'Lead technique d’une équipe de 5 (projet Epitech).',
+      results: ['Résiste comme prévu à 48 des 53 attaques de manipulation testées', 'Masque les données personnelles avant toute réponse', '145 tests automatiques'],
+      desc: 'Sensai est construit sans framework LLM : il parle directement à un modèle local via l’API d’Ollama. Côté chat, il mémorise chaque viewer, renvoie les questions sur la chaîne à la FAQ et les questions d’actualité au web. Côté streamer, une interface locale pilote le bot, le compte-rendu du live et les exports.',
+      points: ['RAG sur la FAQ de la chaîne (embeddings, SQLite), routeur vers la recherche web', 'Garde-fous contre l’injection de prompt, évalués sur une suite de 53 attaques', 'Masquage des données personnelles', 'Serveur MCP, CLI streamer, overlay OBS, veille web planifiée'],
       stack: ['Python', 'Ollama', 'SQLite', 'Embeddings', 'MCP'],
     },
     {
-      name: 'my_torch', sub: 'Réseau de neurones écrit à la main', cat: ['ia'], ctx: 'Epitech · Lead · binôme',
-      demo: 'my_torch', demoLabel: 'Tester sur un échiquier',
-      img: 'assets/my_torch.png', fit: 'contain', alt: 'Courbes de loss et de précision de plusieurs architectures',
-      link: ['https://github.com/Origanire/my_torch', 'github.com/Origanire/my_torch'],
-      metric: ['91,8 %', 'de précision sur 72 301 positions jamais vues'],
-      desc: 'Un réseau de neurones sans PyTorch ni TensorFlow, avec NumPy seul, qui lit une position d’échecs (FEN) et prédit l’état de la partie : rien, échec ou mat, pour chaque camp.',
-      points: ['Architecture 769 → 512 → 256 → 5, ReLU, dropout 0.2, softmax', 'Adam, batch 256, régularisation L2, early stopping', '650 718 positions, ×4 par augmentation de données', '90,25 % de F1 macro'],
+      id: 'my_torch', name: 'my_torch', sub: 'Réseau de neurones écrit à la main', cat: ['ia'], label: 'IA & ML',
+      demo: 'my_torch', demoLabel: 'Tester en direct',
+      img: 'assets/card-my_torch.jpg', alt: 'Démo de my_torch : échiquier et probabilités prédites par le réseau',
+      link: ['https://github.com/Origanire/my_torch', 'Code sur GitHub'],
+      metric: ['91,8 %', 'de bonnes réponses sur 72 301 positions jamais vues'],
+      pitch: 'Un réseau de neurones codé entièrement à la main, sans bibliothèque d’IA, qui regarde une partie d’échecs et dit s’il y a échec ou mat.',
+      role: 'Lead d’un binôme (projet Epitech).',
+      results: ['Chaque calcul du réseau est écrit et vérifié par des tests', 'Score confirmé une fois retirées les positions déjà vues', 'Le vrai réseau tourne ici, dans le navigateur'],
+      desc: 'Le réseau lit une position d’échecs au format FEN et prédit l’état de la partie : rien, échec ou mat, pour chaque camp. Tout est écrit avec NumPy seul : couches, rétropropagation, optimiseurs, régularisation. Les choix sont appuyés par des benchmarks (architecture, taux d’apprentissage, augmentation de données).',
+      points: ['Architecture 769 → 512 → 256 → 5, ReLU, dropout 0,2, softmax', 'Adam, batch 256, régularisation L2, early stopping', '650 718 positions, ×4 par augmentation de données (miroir, couleurs)', '90,25 % de F1 macro ; gradients vérifiés par différences finies'],
       stack: ['Python', 'NumPy', 'Matplotlib'],
     },
     {
-      name: 'CVRIE', sub: 'Vision par ordinateur sur radiographies thoraciques', cat: ['ia'], ctx: 'Epitech · Équipe', wide: true,
-      demo: 'cvrie', demoLabel: 'Tester sur une radiographie',
-      img: 'assets/cvrie.jpg', alt: 'Onglet Performances de l’application CVRIE : AUC 0,748, sensibilité 0,80',
-      link: ['https://github.com/Origanire/cvrie', 'github.com/Origanire/cvrie'],
-      desc: 'Un prototype de recherche qui classe des radiographies thoraciques, avec une application locale pour importer une image et consulter les résultats mesurés. Traitement 100 % local, et un parti pris : ne jamais présenter un modèle comme meilleur qu’il ne l’est.',
-      points: ['288 radiographies de 288 patients (JSRT + LIDC-IDRI), sources publiques', 'Encodeurs DenseNet / ResNet gelés + classifieurs (régression logistique, SVM)', '40 configurations comparées, 600 ajustements en validation croisée', 'AUC 0,748 ; modèle 512 px écarté faute de gain régulier', 'Partie non supervisée : clustering KMeans / HDBSCAN + UMAP', 'Application Streamlit, tests pytest'],
-      stack: ['Python', 'PyTorch', 'torchvision', 'scikit-learn', 'Streamlit'],
+      id: 'cvrie', name: 'CVRIE', sub: 'Vision par ordinateur sur radiographies', cat: ['ia'], label: 'IA & ML',
+      demo: 'cvrie', demoLabel: 'Tester en direct',
+      img: 'assets/card-cvrie.jpg', alt: 'Radiographie thoracique d’exemple (LIDC-IDRI, CC BY 3.0) utilisée par la démo',
+      link: ['https://github.com/Origanire/cvrie', 'Code sur GitHub'],
+      pitch: 'Un prototype de recherche qui analyse des radiographies du thorax pour repérer des nodules, avec une évaluation honnête de ses limites.',
+      role: 'Projet Epitech en équipe ; j’ai développé la partie classification d’images.',
+      results: ['AUC de 0,748 sur 50 patients de test', '40 configurations comparées avant de choisir le modèle', 'Testable ici : l’image ne quitte pas l’appareil'],
+      desc: 'Le modèle combine un encodeur DenseNet pré-entraîné sur des radiographies et un classifieur entraîné sur 288 patients issus de bases publiques. Une version plus lourde a été écartée faute de gain régulier : le prototype affiche ce qu’il réussit vraiment, et ce n’est pas un outil médical.',
+      points: ['288 radiographies de 288 patients (JSRT + LIDC-IDRI)', 'Encodeurs DenseNet / ResNet gelés + régression logistique ou SVM', '600 ajustements en validation croisée ; modèle 512 px écarté', 'Partie non supervisée : clustering KMeans / HDBSCAN + UMAP', 'Application Streamlit, tests pytest'],
+      stack: ['Python', 'PyTorch', 'scikit-learn', 'Streamlit'],
     },
     {
-      name: 'NeuroWarm', sub: 'Échauffement cognitif avant de jouer', cat: ['desktop', 'ia'], ctx: 'Perso · produit livré',
+      id: 'neurowarm', name: 'NeuroWarm', sub: 'Échauffement cognitif avant de jouer', cat: ['desktop', 'ia'], label: 'Produit',
       video: 'assets/neurowarm.mp4', poster: 'assets/neurowarm-poster.jpg',
       link: ['https://neurowarm.fr', 'neurowarm.fr ↗'],
-      desc: 'Une application d’échauffement à faire juste avant une partie : réaction, attention, poursuite visuelle et visée, en 3 à 10 minutes. Publiée pour macOS et Windows.',
-      points: ['Difficulté adaptative par axe (précision, rapidité)', 'Programme personnalisé construit sur tes faiblesses mesurées', 'Profils de jeu : FPS tactique, FPS de suivi, MOBA, Sport', 'Sensibilité et FOV importés de Valorant, CS2, Apex…'],
+      pitch: 'Une application d’échauffement pour joueurs de jeux vidéo : réflexes, attention et visée, en 3 à 10 minutes avant une partie.',
+      role: 'Projet personnel : conçu, développé et publié seul.',
+      results: ['Publiée sur macOS et Windows', 'Programme qui s’adapte aux faiblesses mesurées', 'Réglages de souris importés de Valorant, CS2, Apex'],
+      desc: 'NeuroWarm propose dix exercices de réaction, de poursuite visuelle et de visée. La difficulté s’ajuste séparément sur la précision et la rapidité, et un programme personnalisé est construit à partir des résultats.',
+      points: ['Difficulté adaptative par axe (précision, rapidité)', 'Profils de jeu : FPS tactique, FPS de suivi, MOBA, Sport', 'Application desktop Tauri 2, données locales en SQLite', 'Installeurs .dmg, .exe et .msi'],
       stack: ['Tauri 2', 'React', 'TypeScript', 'SQLite'],
     },
     {
-      name: 'Lumi Dashboard', sub: 'Tableaux de bord personnalisables', cat: ['web'], ctx: 'Epitech · Lead',
+      id: 'lumi', name: 'Lumi Dashboard', sub: 'Tableau de bord personnel', cat: ['web'], label: 'Web',
       img: 'assets/lumi.jpg', alt: 'Page d’accueil de Lumi en mode nuit',
-      link: ['https://github.com/Origanire/lumi-dashboard', 'github.com/Origanire/lumi-dashboard'],
-      desc: 'Des dashboards sauvegardés dans le compte utilisateur, avec notes, minuteur de concentration et widgets. L’interface React parle à une API Rust.',
-      points: ['5 intégrations : GitHub, Spotify, Gmail, Google Calendar, Open-Meteo', 'Assistant IA Mistral', 'API Axum documentée en OpenAPI, migrations SQLx', 'Base PostgreSQL via Docker Compose'],
-      stack: ['React', 'Vite', 'Rust', 'Axum', 'PostgreSQL', 'Docker'],
+      link: ['https://github.com/Origanire/lumi-dashboard', 'Code sur GitHub'],
+      pitch: 'Un tableau de bord en ligne qui rassemble notes, minuteur, météo, mails et agenda au même endroit.',
+      role: 'Lead technique (projet Epitech).',
+      results: ['5 services connectés : GitHub, Spotify, Gmail, Agenda, météo', 'Comptes sécurisés, données en base PostgreSQL', 'Plus de 80 tests automatiques'],
+      desc: 'Chaque utilisateur compose ses dashboards avec des widgets, sauvegardés dans son compte. L’interface React parle à une API Rust documentée, et un assistant IA Mistral répond aux questions.',
+      points: ['Front React (Vite), API Rust Axum documentée en OpenAPI', 'PostgreSQL avec migrations SQLx, sessions HttpOnly, mots de passe bcrypt', 'Assistant IA Mistral avec limites de débit', 'Docker Compose, tests de bout en bout Playwright'],
+      stack: ['React', 'Rust', 'Axum', 'PostgreSQL', 'Docker'],
     },
     {
-      name: 'R-Type', sub: 'Moteur de jeu multijoueur en réseau', cat: ['systeme'], ctx: 'Epitech · Lead · équipe de 4',
-      link: ['https://github.com/Origanire/r-type', 'github.com/Origanire/r-type'],
-      desc: 'Un shoot’em up jusqu’à 4 joueurs, construit sur notre propre moteur data-driven : les jeux se décrivent en JSON et en Python, sans une ligne de C++.',
-      points: ['Serveur autoritaire à 60 ticks/s, protocole UDP binaire', 'Snapshots delta, messages fiables, mesures sous latence et perte (netem)', 'ECS, physique, rendu, audio, scripting en modules indépendants', 'Plugins chargés en .so / .dll, lobby, chat, mode versus'],
-      stack: ['C++20', 'UDP', 'Python', 'CMake', 'vcpkg'],
-    },
-    {
-      name: 'LoL Manager', sub: 'Jeu de management esport', cat: ['desktop'], ctx: 'Perso',
-      desc: 'Un jeu de management d’équipe League of Legends façon Football Manager, avec les vraies ligues (LCK, LPL, LEC, LCS…). Gratuit, non officiel.',
-      points: ['Draft, plan de jeu et matchs simulés sur une minimap', 'Saisons, mercato, entraînement, staff, carrière infinie', 'Pipeline de données réelles vers une base SQLite', 'Installeurs macOS / Windows publiés par GitHub Actions'],
-      stack: ['TypeScript', 'Tauri', 'SQLite', 'GitHub Actions'],
-    },
-    {
-      name: 'Raytracer', sub: 'Moteur de rendu 3D par lancer de rayons', cat: ['systeme'], ctx: 'Epitech',
-      wide: true, img: 'assets/raytracer.jpg', link: ['https://github.com/Origanire/Raytracing-image-generator', 'github.com/Origanire/Raytracing-image-generator'],
-      desc: 'Un raytracer modulaire : primitives, matériaux et lumières chargés dynamiquement en plugins, scènes décrites en fichiers de configuration.',
-      points: ['Architecture plugins (.so) et factories', 'BVH et multithreading pour le rendu', 'Réflexions, brouillard, occlusion ambiante, tores, Möbius…'],
+      id: 'raytracer', name: 'Raytracer', sub: 'Moteur de rendu 3D', cat: ['systeme'], label: 'Systèmes',
+      img: 'assets/raytracer.jpg', alt: 'Image de synthèse produite par le raytracer',
+      link: ['https://github.com/Origanire/Raytracing-image-generator', 'Code sur GitHub'],
+      pitch: 'Un programme qui fabrique des images 3D réalistes en simulant le trajet des rayons de lumière.',
+      role: 'Projet Epitech en équipe.',
+      results: ['Rendu accéléré par BVH et multithreading', 'Nouveaux objets et matériaux ajoutés sans recompiler', 'Réflexions, brouillard, occlusion ambiante'],
+      desc: 'Les primitives, matériaux et lumières sont des plugins chargés à l’exécution ; les scènes sont décrites dans des fichiers de configuration.',
+      points: ['Architecture plugins (.so) et factories', 'BVH et multithreading pour le rendu', 'Tores, rubans de Möbius, réflexions, brouillard'],
       stack: ['C++', 'SFML', 'libconfig'],
     },
     {
-      name: 'my_pgp', sub: 'Cryptographie implémentée de zéro', cat: ['systeme'], ctx: 'Epitech · Lead',
-      link: ['https://github.com/Origanire/my_pgp', 'github.com/Origanire/my_pgp'],
-      desc: 'Une implémentation pédagogique, sans aucune dépendance, des chiffrements symétriques, asymétriques et hybrides façon PGP.',
-      points: ['XOR, AES-128/192/256, RSA avec génération de clés', 'Schémas hybrides PGP-XOR et PGP-AES', 'Tests, benchmarks et démonstrations de sécurité'],
-      stack: ['Python', 'AES', 'RSA'],
+      id: 'r-type', name: 'R-Type', sub: 'Jeu en ligne sur notre propre moteur', cat: ['systeme'], label: 'Systèmes',
+      link: ['https://github.com/Origanire/r-type', 'Code sur GitHub'],
+      pitch: 'Un jeu de tir en ligne jusqu’à 4 joueurs, construit sur un moteur de jeu que nous avons écrit nous-mêmes.',
+      role: 'Lead technique d’une équipe de 4 (projet Epitech).',
+      results: ['Serveur à 60 mises à jour par seconde', 'Testé avec latence et pertes réseau simulées', 'Compile sous Linux, Windows et macOS'],
+      desc: 'Le moteur est générique : un jeu se décrit en JSON et en Python, sans une ligne de C++. Le dépôt contient deux jeux construits dessus, dont R-Type en réseau.',
+      points: ['Serveur autoritaire, protocole UDP binaire, snapshots delta, messages fiables', 'ECS, physique, rendu, audio, scripting en modules indépendants', 'Plugins chargés en .so / .dll ; lobby, salons, chat, mode versus', 'CI GitHub Actions Linux et Windows'],
+      stack: ['C++20', 'UDP', 'Python', 'CMake'],
     },
     {
-      name: 'Netfilm', sub: 'Jeux autour du cinéma', cat: ['web'], ctx: 'Epitech · Project week',
+      id: 'lol-manager', name: 'LoL Manager', sub: 'Jeu de gestion esport', cat: ['desktop'], label: 'Produit',
+      pitch: 'Un jeu de gestion d’équipe League of Legends, dans l’esprit de Football Manager, avec les vraies ligues.',
+      role: 'Projet personnel, seul.',
+      results: ['Installeurs macOS et Windows publiés automatiquement', 'Données réelles des ligues LCK, LPL, LEC, LCS', 'Matchs simulés et affichés sur une minimap'],
+      desc: 'Draft, plan de jeu, saisons, mercato, entraînement et staff, sur une carrière sans fin. Le code n’est pas public pour l’instant.',
+      points: ['Pipeline de données réelles vers une base SQLite', 'Application desktop Tauri', 'Release CI avec GitHub Actions'],
+      stack: ['TypeScript', 'Tauri', 'SQLite'],
+    },
+    {
+      id: 'my_pgp', name: 'my_pgp', sub: 'Chiffrement recodé de zéro', cat: ['systeme'], label: 'Systèmes',
+      link: ['https://github.com/Origanire/my_pgp', 'Code sur GitHub'],
+      pitch: 'Les algorithmes de chiffrement AES, RSA et PGP recodés de zéro pour comprendre comment ils fonctionnent.',
+      role: 'Lead d’un binôme (projet Epitech).',
+      results: ['Aucune bibliothèque externe', '32 tests automatiques', 'Faiblesses volontaires démontrées et documentées'],
+      desc: 'Une implémentation pédagogique des chiffrements symétriques, asymétriques et hybrides, imposés par le sujet.',
+      points: ['XOR, AES-128/192/256, RSA avec génération de clés', 'Schémas hybrides PGP-XOR et PGP-AES', 'Benchmarks et démonstrations de sécurité'],
+      stack: ['Python'],
+    },
+    {
+      id: 'netfilm', name: 'Netfilm', sub: 'Jeux autour du cinéma', cat: ['web'], label: 'Web',
       link: ['https://origanire.github.io/netfilm-chill.github.io/', 'Voir le site ↗'],
-      desc: 'Une plateforme de jeux de cinéma réalisée en une semaine : un génie qui devine le film auquel tu penses, et un blind test sur les bandes-son.',
+      pitch: 'Deux jeux autour du cinéma réalisés en une semaine : un génie qui devine ton film et un blind test sur les bandes-son.',
+      role: 'Projet d’une semaine (Epitech).',
+      results: ['Mis en ligne et jouable', 'Backend Flask, frontend React'],
+      desc: 'Une plateforme de mini-jeux construite et déployée pendant une project week.',
       points: ['Backend Flask, frontend React (Vite)', 'Déployée sur GitHub Pages'],
       stack: ['Python', 'Flask', 'React'],
     },
   ];
+  window.PROJECTS = projects;
   const filters = [['all', 'Tout'], ['ia', 'IA & ML'], ['desktop', 'Produits & apps'], ['systeme', 'Systèmes & C++'], ['web', 'Web']];
   const search = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>';
   const ghIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>';
 
   const grid = document.getElementById('grid');
-  const labels = { ia: 'IA & ML', web: 'Web', desktop: 'Produit', systeme: 'Systèmes' };
-  projects.forEach(p => p.label = labels[p.cat[0]]);
   grid.innerHTML = projects.map(p => `
-    <article class="card${p.wide ? ' wide' : ''}${p.img || p.video ? ' has-img' : ''}" data-cat="${p.cat.join(' ')}">
+    <article class="card" data-cat="${p.cat.join(' ')}">
       <div class="tab">${p.label}</div>
       <div class="box">
-        ${p.video ? `<video class="shot" src="${p.video}" ${p.poster ? `poster="${p.poster}"` : ''} muted loop playsinline autoplay preload="metadata" aria-label="Démo de ${p.name}"></video>`
-          : p.img ? `<img class="shot${p.fit ? ' ' + p.fit : ''}" src="${p.img}" alt="${p.alt || 'Capture de ' + p.name}" loading="lazy">` : ''}
-        <div class="body"><h3>${p.name}<small>${p.sub}</small></h3>
-        <p>${p.desc}</p>
-        ${p.metric ? `<p class="metric">${p.metric[0]}<small>${p.metric[1]}</small></p>` : ''}
-        <ul>${p.points.map(x => `<li>${x}</li>`).join('')}</ul>
-        <div class="stack">${p.stack.map(x => `<span>${x}</span>`).join('')}</div>
-        ${p.demo ? `<button class="btn dark try" data-demo="${p.demo}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>${p.demoLabel}</button>` : ''}
-        <div class="foot">
-          <span class="badge">${p.ctx}</span>
-          ${p.link ? `<a href="${p.link[0]}" target="_blank" rel="noopener">${p.link[0].includes('github.com/') ? ghIcon : ''}${p.link[1]}</a>` : `<a href="mailto:milobousquetpro@gmail.com?subject=${encodeURIComponent('Code de ' + p.name)}" class="ask">Code sur demande →</a>`}
-        </div>
+        ${p.video ? `<video class="shot" src="${p.video}" poster="${p.poster}" muted loop playsinline autoplay preload="metadata" aria-hidden="true"></video>`
+          : p.img ? `<img class="shot" src="${p.img}" alt="${p.alt}" loading="lazy">` : ''}
+        <div class="body">
+          <h3><button class="open" data-project="${p.id}">${p.name}</button><small>${p.sub}</small></h3>
+          <p>${p.pitch}</p>
+          <p class="myrole"><b>Mon rôle :</b> ${p.role}</p>
+          <ul>${p.metric ? `<li><b>${p.metric[0]}</b> ${p.metric[1]}</li>` : ''}${p.results.map(x => `<li>${x}</li>`).join('')}</ul>
+          <div class="stack">${p.stack.map(x => `<span>${x}</span>`).join('')}</div>
+          ${p.demo ? `<button class="btn dark try" data-demo="${p.demo}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg>${p.demoLabel}</button>` : ''}
+          <div class="foot">
+            <span class="more" aria-hidden="true">Voir le détail →</span>
+            ${p.link ? `<a class="code" href="${p.link[0]}" target="_blank" rel="noopener">${p.link[0].includes('github.com/') ? ghIcon : ''}${p.link[1]}</a>` : ''}
+          </div>
         </div>
       </div>
     </article>`).join('');
@@ -482,6 +525,6 @@
     <div class="demo-body"></div>
   </div>
 </dialog>
-<script type="module" src="assets/demos.js?v=3"></script>
+<script type="module" src="assets/demos.js?v=4"></script>
 </body>
 </html>

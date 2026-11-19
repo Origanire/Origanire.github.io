@@ -4,23 +4,99 @@ const dialog = document.getElementById('demo');
 const titleEl = dialog.querySelector('.demo-title');
 const bodyEl = dialog.querySelector('.demo-body');
 const DEMOS = {};
+let opener = null;
+
+const html = (strings, ...values) => strings.reduce((out, s, i) => out + s + (i < values.length ? values[i] : ''), '');
+
+/* ---------------------------------------------------------------- fenêtre */
+
+function mountDemo(name, root) {
+  return DEMOS[name].open(root).catch(err => {
+    root.innerHTML = `<p class="demo-error">La démo n'a pas pu se charger (${err.message}).</p>`;
+  });
+}
+
+function showDialog(title) {
+  titleEl.textContent = title;
+  bodyEl.replaceChildren();
+  opener = document.activeElement;
+  if (!dialog.open) dialog.showModal();
+  dialog.querySelector('.box').scrollTop = 0;
+}
+
+function openDemo(name) {
+  showDialog(DEMOS[name].title);
+  mountDemo(name, bodyEl);
+}
+
+function projectDetail(p) {
+  const media = p.video
+    ? `<video class="shot" src="${p.video}" poster="${p.poster}" controls muted playsinline preload="metadata"></video>`
+    : p.img ? `<img class="shot" src="${p.img}" alt="${p.alt}">` : '';
+  const code = p.link
+    ? `<a class="btn${p.demo ? '' : ' dark'}" href="${p.link[0]}" target="_blank" rel="noopener">${p.link[1]}</a>`
+    : '<span class="ctx">Code non public pour l’instant, disponible sur demande.</span>';
+  return html`
+    <div class="detail">
+      <div class="detail-head"><p>${p.pitch}</p></div>
+      <div class="detail-cols">
+        <div>
+          <h4>Mon rôle</h4>
+          <p class="ctx">${p.role}</p>
+          <h4 style="margin-top:20px">Résultats</h4>
+          <ul>${p.results.map(r => `<li>${r}</li>`).join('')}</ul>
+        </div>
+        <div>
+          <h4>Comment c'est construit</h4>
+          <p class="ctx">${p.desc}</p>
+          <ul style="margin-top:12px">${p.points.map(r => `<li>${r}</li>`).join('')}</ul>
+          <div class="stack">${p.stack.map(s => `<span>${s}</span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="detail-links">${code}</div>
+      ${p.demo ? '' : `<div class="detail-media">${media}</div>`}
+      ${p.demo ? '<section class="detail-demo" aria-label="Démo en direct"></section>' : ''}
+    </div>`;
+}
+
+function openProject(id) {
+  const p = (window.PROJECTS || []).find(x => x.id === id);
+  if (!p) return;
+  showDialog(p.name);
+  bodyEl.innerHTML = projectDetail(p);
+  history.replaceState(null, '', `#projet-${id}`);
+  // La démo se lance d'elle-même dans la fenêtre du projet.
+  if (p.demo) mountDemo(p.demo, bodyEl.querySelector('.detail-demo'));
+}
 
 dialog.querySelector('.demo-close').addEventListener('click', () => dialog.close());
 dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
-
-document.addEventListener('click', e => {
-  const button = e.target.closest('[data-demo]');
-  if (!button) return;
-  const demo = DEMOS[button.dataset.demo];
-  titleEl.textContent = demo.title;
+dialog.addEventListener('close', () => {
   bodyEl.replaceChildren();
-  dialog.showModal();
-  demo.open(bodyEl).catch(err => {
-    bodyEl.innerHTML = `<p class="demo-error">La démo n'a pas pu se charger (${err.message}).</p>`;
-  });
+  if (location.hash.startsWith('#projet-')) history.replaceState(null, '', location.pathname + location.search);
+  if (opener && document.contains(opener)) opener.focus();
 });
 
-const html = (strings, ...values) => strings.reduce((out, s, i) => out + s + (i < values.length ? values[i] : ''), '');
+document.addEventListener('click', e => {
+  const demo = e.target.closest('[data-demo]');
+  if (demo) { openDemo(demo.dataset.demo); return; }
+  const project = e.target.closest('[data-project]');
+  if (project) { openProject(project.dataset.project); return; }
+  // Clic n'importe où sur une carte (hors liens et boutons) : ouvre le projet.
+  const card = e.target.closest('.card');
+  if (card && !e.target.closest('a, button')) {
+    const open = card.querySelector('[data-project]');
+    if (open) openProject(open.dataset.project);
+  }
+});
+
+const fromHash = () => {
+  const project = location.hash.match(/^#projet-(.+)$/);
+  const demo = location.hash.match(/^#demo-(.+)$/);
+  if (project) openProject(decodeURIComponent(project[1]));
+  else if (demo && DEMOS[demo[1]]) openDemo(demo[1]);
+};
+window.addEventListener('hashchange', fromHash);
 
 /* ---------------------------------------------------------------- my_torch */
 
@@ -435,5 +511,8 @@ DEMOS.cvrie = {
     await run(`demos/cvrie/${first.file}`, first);
   },
 };
+
+// Lien direct partageable : origanire.github.io/#projet-my_torch
+fromHash();
 
 export { DEMOS, parseBoard, predict, loadTorchModel, loadCvrie, scoreImage, loadImage };
