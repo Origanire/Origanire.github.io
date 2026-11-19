@@ -26,7 +26,7 @@ const html = (strings, ...values) => strings.reduce((out, s, i) => out + s + (i 
 
 const PIECES = 'PNBRQKpnbrqk';
 // Les pièces d'échecs sont le contenu de l'échiquier, pas une décoration.
-const GLYPH = { // taste-skill-ignore: chess pieces are board content K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙', k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
+const GLYPH = { K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙', k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' }; // taste-skill-ignore: chess pieces are board content
 const LABELS_FR = ['Rien', 'Échec par les blancs', 'Échec par les noirs', 'Mat par les blancs', 'Mat par les noirs'];
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -155,7 +155,7 @@ DEMOS.my_torch = {
     const verdictEl = root.querySelector('.verdict');
 
     const tools = [...'KQRBNP', ...'kqrbnp', ''];
-    paletteEl.innerHTML = tools.map(p => `<button class="tool" data-tool="${p}" aria-label="${p ? 'Poser ' + p : 'Gomme'}">${p ? GLYPH[p] + '︎' : 'Gomme'}</button>`).join('');
+    paletteEl.innerHTML = tools.map(p => `<button class="tool" data-tool="${p}" aria-label="${p ? 'Poser ' + p : 'Gomme'}">${p ? GLYPH[p] + '︎' : '<svg class="eraser" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4l5 5-9.5 9.5H6L3.5 16a1.5 1.5 0 0 1 0-2.1zM10 9l5 5M6 18.5h14"/></svg>'}</button>`).join('');
 
     const render = () => {
       boardEl.innerHTML = state.squares.map((line, r) => line.map((c, f) => {
